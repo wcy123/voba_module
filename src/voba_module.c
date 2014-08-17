@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <limits.h>
 #include <dlfcn.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -83,6 +84,17 @@ static inline voba_str_t* find_file(voba_str_t * module_name, voba_str_t * pwd)
                 ret = NULL;
             }
         }
+    }
+    if(ret != NULL){
+        char * p = realpath(voba_str_to_cstr(ret), NULL);
+        if(p == NULL){
+            voba_throw_exception(voba_make_string(
+                                     voba_strcat(
+                                         voba_str_from_cstr("cannot resolve realpath of "),
+                                         ret)));
+        }
+        ret = voba_strdup(voba_str_from_cstr(p));
+        free(p);
     }
     return ret;
 }

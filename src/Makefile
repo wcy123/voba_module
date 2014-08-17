@@ -1,5 +1,5 @@
 CFLAGS += -fPIC
-
+CFLAGS += -D_BSD_SOURCE # otherwise realpath is not defined.
 all: libvoba_module.so
 
 libvoba_module.so: voba_module.o
