@@ -170,7 +170,11 @@ voba_value_t voba_import(voba_value_t module_name,voba_value_t pwd)
     static voba_value_t the_hash_table = VOBA_NIL;
     fprintf(stderr,__FILE__ ":%d:[%s] %s\n", __LINE__, __FUNCTION__, voba_value_to_str(module_name)->data);
 
-    if(voba_is_nil(the_hash_table)) the_hash_table = voba_make_hash();
+    if(voba_is_nil(the_hash_table)) {
+        the_hash_table = voba_make_hash();
+        fprintf(stderr,__FILE__ ":%d:[%s] the_hash_table 0x%lx\n", __LINE__, __FUNCTION__,
+            the_hash_table);
+    }
     voba_value_t filename =  voba_make_string(find_file(voba_value_to_str(module_name),voba_value_to_str(pwd)));
     if(voba_is_nil(filename)) return VOBA_NIL;
     fprintf(stderr,__FILE__ ":%d:[%s] find file %s\n", __LINE__, __FUNCTION__, voba_value_to_str(filename)->data);
