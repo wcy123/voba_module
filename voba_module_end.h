@@ -9,6 +9,9 @@
 #ifndef SYMBOL_TABLE
 #error "SYMBOL_TABLE is not defined"
 #endif
+#ifndef IMP
+#error "IMP is not defined"
+#endif
 
 // optional input macros
 #ifndef MODULE_NAME_SPACE
@@ -28,12 +31,12 @@
 #endif
 
 // do it
-void foo() {}
 DECLARE_SYMBOL_TABLE(SYMBOL_TABLE)
 
 // clear input macros
 #undef MODULE_NAME
 #undef SYMBOL_TABLE
+#undef IMP
 #undef MODULE_NAME_SPACE
 #undef MODULE_NAME_SPACE
 #undef MODULE_SYMBOL_PREFIX

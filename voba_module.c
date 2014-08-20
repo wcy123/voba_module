@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <dlfcn.h>
@@ -116,18 +117,6 @@ voba_value_t split_path(voba_str_t* filename)
                           voba_make_string(voba_substr(filename,j+1, filename->len - j -1)));
 }
 static inline
-voba_str_t* slurp_file(voba_str_t* filename)
-{
-    int c = 0;
-    voba_str_t * ret = voba_str_empty();
-    FILE * fp = fopen(voba_str_to_cstr(filename),"r");
-    if(fp == NULL) return ret;
-    while((c = fgetc(fp))!= EOF){
-        ret = voba_strcat_char(ret,(char)c);
-    }
-    return ret;
-}
-static inline
 voba_value_t parse_module(voba_value_t name, voba_str_t* filename)
 {
     voba_value_t module = make_module(name);
@@ -138,7 +127,7 @@ voba_value_t parse_module(voba_value_t name, voba_str_t* filename)
                           voba_make_symbol_cstr("not-loaded",module));
     voba_symbol_set_value(voba_make_symbol_cstr("__dir__",module), voba_head(dir_name_base_name));
     voba_symbol_set_value(voba_make_symbol_cstr("__file__",module), voba_tail(dir_name_base_name));
-    voba_str_t * content = slurp_file(filename);
+    voba_str_t * content = voba_str_from_file(voba_str_to_cstr(filename));
     voba_symbol_set_value(voba_make_symbol_cstr("__source__",module), voba_make_string(content));
     void * scanner;
     yylex_init(&scanner);
@@ -194,7 +183,7 @@ voba_value_t voba_import(voba_value_t module_name,voba_value_t pwd)
     if(!voba_is_nil(cache)){
         return voba_tail(cache);
     }
-    fprintf(stderr,__FILE__ ":%d:[%s] init %s\n", __LINE__, __FUNCTION__, voba_value_to_str(filename)->data);
+    fprintf(stderr,__FILE__ ":%d:[%s]     --  init %s\n", __LINE__, __FUNCTION__, voba_value_to_str(filename)->data);
     voba_value_t module = parse_module(module_name,voba_value_to_str(filename));
     voba_value_t imp  = voba_symbol_value(voba_make_symbol_cstr("__imp__",module));
     if(voba_is_nil(imp)){
