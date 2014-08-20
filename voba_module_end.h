@@ -1,6 +1,6 @@
 // this file will be included multiple times by every module so that
 // there is no `#pragram once` protection.
-#include "voba_module.h"
+#include <voba/include/module.h>
 
 // mandatory input macros MODULE_NAME and SYMBOL_TABLE
 #ifndef MODULE_NAME

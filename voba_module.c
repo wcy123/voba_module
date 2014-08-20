@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "voba_value.h"
+#include <voba/include/value.h>
 #include "voba_module.h"
 #include "voba_module_lex.c"
 static inline
