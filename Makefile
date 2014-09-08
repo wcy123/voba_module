@@ -30,17 +30,15 @@ all: install
 
 install: libvoba_module.so
 	install libvoba_module.so $(PREFIX)/voba/lib/
-	install voba_module.h $(PREFIX)/voba/include/module.h
-	install voba_module_end.h $(PREFIX)/voba/include/module_end.h
+	install module.h $(PREFIX)/voba/include/module.h
+	install module_end.h $(PREFIX)/voba/include/module_end.h
 
-libvoba_module.so: voba_module.o
+libvoba_module.so: module.o
 	$(CXX) -shared -Wl,-soname,$@  -o $@ $<
 
-voba_module.o: voba_module.c voba_module.h voba_module_lex.c
+module.o: module.cc module.h
 
 
-voba_module_lex.c: voba_module_lex.l
-	flex voba_module_lex.l
 clean:
 	rm *.o *.so
 
