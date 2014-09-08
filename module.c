@@ -75,13 +75,13 @@ static inline voba_value_t split(voba_str_t* s)
     return ret;
 }
 static voba_value_t voba_path = VOBA_NIL;
-EXEC_ONCE_DO(
+EXEC_ONCE_PROGN {
     const char * env = getenv("VOBA_PATH");
     if(env == NULL) {
         env = ".";
     }
     voba_path = split(voba_str_from_cstr(env));
-    )
+}
 voba_value_t voba_module_path()
 {
     return voba_path;
@@ -104,13 +104,8 @@ voba_value_t dir_and_base_name(voba_str_t* filename)
     return voba_make_pair(voba_make_string(voba_substr(filename,0,j)),
                           voba_make_string(voba_substr(filename,j+1, filename->len - j -1)));
 }
-static inline void voba__builtin_init_module(voba_value_t module,voba_value_t cwd,voba_value_t basename)
-{
-    voba_symbol_set_value(VOBA_SYMBOL("__dir__",module), cwd);
-    voba_symbol_set_value(VOBA_SYMBOL("__file__",module), basename);
-}
 static voba_value_t module_cwd = VOBA_NIL;
-EXEC_ONCE_DO(
+EXEC_ONCE_PROGN{
     const size_t sz  = 64*1024;
     char * p = (char*)malloc(sz);
     if(!p) abort();
@@ -119,7 +114,7 @@ EXEC_ONCE_DO(
     module_cwd = voba_make_array_0();
     voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
     free(p);
-    );
+};
 
 voba_value_t voba_load_module(const char * module_name,voba_value_t module)
 {
@@ -172,19 +167,37 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
         VOBA_THROW(VOBA_CONST_CHAR("dlsym(voba_init) failure: "),
                    voba_str_from_cstr(dlerror()));
     }
-    voba__builtin_init_module(module,cwd,basename);
+    voba_symbol_set_value(VOBA_SYMBOL("__dir__",module), cwd);
+    voba_symbol_set_value(VOBA_SYMBOL("__file__",module), basename);
     extern voba_value_t load_module_cc(voba_value_t (*init)(voba_value_t), voba_value_t module, voba_value_t module_cwd, voba_value_t dirname);
     load_module_cc(init,module,module_cwd,dir_name);
     return ret;
 }
+voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[])
+{
+    voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
+    voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
+    voba_value_t m = voba_hash_find(voba_modules,id);
+    if(voba_is_nil(m)){
+        m = voba_make_symbol_table();
+        voba_hash_insert(voba_modules,id,m);
+        voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);
+        voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name);
+        for(int i = 0; symbols[i] != NULL; ++i){
+            voba_intern_symbol(voba_make_symbol_cstr(symbols[i],VOBA_NIL),m);
+        }
+        voba_load_module(module_name,m);
+    }
+    return m;
+}
 voba_value_t voba_modules = VOBA_NIL;
-EXEC_ONCE_DO(voba_modules = voba_make_hash(););
+EXEC_ONCE_PROGN{voba_modules = voba_make_hash();}
 
 
 static voba_value_t all_symbols = VOBA_NIL;
-EXEC_ONCE_DO(
+EXEC_ONCE_PROGN{
     all_symbols = voba_make_hash();
-    );
+};
 void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line)
 {
     fprintf(stderr, "%s:%d: define symbol %s to 0x%lx\n", file, line,
