@@ -33,11 +33,11 @@ install: libvoba_module.so
 	install module.h $(PREFIX)/voba/include/module.h
 	install module_end.h $(PREFIX)/voba/include/module_end.h
 
-libvoba_module.so: module.o
-	$(CXX) -shared -Wl,-soname,$@  -o $@ $<
+libvoba_module.so: module.o module_cpp.o
+	$(CXX) -shared -Wl,-soname,$@  -o $@ $+
 
-module.o: module.cc module.h
-
+module.o: module.c module.h
+module_cpp.o: module_cpp.cc module.h
 
 clean:
 	rm *.o *.so

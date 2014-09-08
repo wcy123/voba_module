@@ -1,10 +1,24 @@
 #pragma once
 #include <exec_once.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern voba_value_t voba_modules;
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
 extern voba_value_t voba_module_path();
-
+extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
+                                  voba_str_t * name, // name
+                                  voba_str_t * cwd,// current working directory
+                                  voba_str_t * prefix,
+                                  voba_str_t * suffix,
+                                  int resolv_realpath
+    );
+#define VOBA_DEFINE_MODULE_SYMBOL(s,v) voba_define_module_symbol(s,v,__FILE__,__LINE__)
+extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line);
+#ifdef __cplusplus
+}
+#endif
 
 #define VOBA_DECLARE_SYMBOL_TABLE(SYMBOL_TABLE)                         \
 EXEC_ONCE_DO(                                                           \
