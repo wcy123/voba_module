@@ -173,6 +173,30 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
     load_module_cc(init,module,module_cwd,dir_name);
     return ret;
 }
+static inline
+void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
+{
+    voba_value_t undefined_symbols = voba_make_array_0();
+    for(int i = 0; symbols[i] != NULL; ++i){
+        voba_value_t s = voba_lookup_symbol(voba_make_symbol_cstr(symbols[i],VOBA_NIL),m);
+        assert(voba_is_symbol(s));
+        if(voba_is_undef(voba_symbol_value(s))){
+            voba_array_push(undefined_symbols, s);
+        }
+    }
+    int64_t len = voba_array_len(undefined_symbols);
+    if(len > 0 ) {
+        voba_str_t *s = voba_str_empty();
+        for(int64_t i = 0; i < len ; ++i){
+            s = voba_strcat_char(s,' ');
+            s = voba_strcat(s,voba_value_to_str(voba_symbol_name(voba_array_at(undefined_symbols,i))));
+        }
+        VOBA_THROW(
+            VOBA_CONST_CHAR("import_module: undefined symbol(s)."),
+            s);
+    }
+    return;
+}
 voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[])
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
@@ -184,9 +208,11 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
         voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);
         voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name);
         for(int i = 0; symbols[i] != NULL; ++i){
-            voba_intern_symbol(voba_make_symbol_cstr(symbols[i],VOBA_NIL),m);
+            voba_value_t s = voba_make_symbol_cstr_with_value(symbols[i],VOBA_NIL,VOBA_UNDEF);
+            voba_intern_symbol(s,m);
         }
         voba_load_module(module_name,m);
+        voba_check_symbol_defined(m,symbols);
     }
     return m;
 }
