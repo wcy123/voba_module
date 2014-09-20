@@ -37,7 +37,7 @@ libvoba_module.so: module.o module_cpp.o
 	$(CXX) -shared -Wl,-soname,$@  -o $@ $+
 
 module.o: module.c module.h
-module_cpp.o: module_cpp.cc module.h
+
 
 clean:
 	rm *.o *.so

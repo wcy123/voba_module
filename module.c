@@ -115,10 +115,21 @@ EXEC_ONCE_PROGN{
     voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
     free(p);
 };
-
+static VOBA_FUNC voba_value_t voba_init_module(voba_value_t self, voba_value_t args)
+{
+    voba_value_t (*init)(voba_value_t);
+    *(void **) (&init) = (void*)(voba_array_at(self,0));
+    voba_value_t module = voba_array_at(self,1);
+    return init(module);
+}
+static VOBA_FUNC voba_value_t pop_cwd(voba_value_t self, voba_value_t args)
+{
+    voba_value_t cwd = voba_array_at(self,0);
+    voba_array_pop(cwd);
+    return VOBA_NIL;
+}
 voba_value_t voba_load_module(const char * module_name,voba_value_t module)
 {
-    voba_value_t ret = VOBA_NIL;
     int64_t len = voba_array_len(module_cwd);
     assert(len > 0);
     voba_value_t cwd = voba_array_at(module_cwd,len-1);
@@ -152,7 +163,6 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
     voba_value_t dir_name_base_name = dir_and_base_name(voba_value_to_str(filename));
     voba_value_t dir_name = voba_head(dir_name_base_name);
     voba_value_t basename = voba_tail(dir_name_base_name);
-    // push cwd
     void *handle;
     handle = dlopen(voba_str_to_cstr(voba_value_to_str(filename)), RTLD_LAZY);
     if(!handle){
@@ -167,11 +177,14 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
         VOBA_THROW(VOBA_CONST_CHAR("dlsym(voba_init) failure: "),
                    voba_str_from_cstr(dlerror()));
     }
-    voba_symbol_set_value(VOBA_SYMBOL("__dir__",module), cwd);
+    voba_symbol_set_value(VOBA_SYMBOL("__dir__",module), dir_name);
     voba_symbol_set_value(VOBA_SYMBOL("__file__",module), basename);
     extern voba_value_t load_module_cc(voba_value_t (*init)(voba_value_t), voba_value_t module, voba_value_t module_cwd, voba_value_t dirname);
-    load_module_cc(init,module,module_cwd,dir_name);
-    return ret;
+    voba_array_push(module_cwd,dir_name);
+    return voba_try_catch(
+        voba_make_closure_2(voba_init_module,((voba_value_t)init),module),
+        voba_make_closure_1(pop_cwd,module_cwd)
+        );
 }
 static inline
 void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
