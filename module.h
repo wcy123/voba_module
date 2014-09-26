@@ -8,12 +8,13 @@ extern voba_value_t voba_modules;
 extern voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[]);
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
 extern voba_value_t voba_module_path();
-extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
+extern voba_str_t* voba_findd_file(voba_value_t search_path, // array of search path
                                   voba_str_t * name, // name
                                   voba_str_t * cwd,// current working directory
                                   voba_str_t * prefix,
                                   voba_str_t * suffix,
-                                  int resolv_realpath
+                                   int resolv_realpath,
+                                   voba_value_t attempts
     );
 #define VOBA_DEFINE_MODULE_SYMBOL(s,v) voba_define_module_symbol(s,v,__FILE__,__LINE__)
 extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line);
@@ -41,7 +42,7 @@ EXEC_ONCE_PROGN{                                                        \
     voba_value_t id = voba_make_string(voba_str_from_cstr(VOBA_MODULE_ID)); \
     voba_value_t m = voba_hash_find(voba_modules,id);                   \
     assert(!voba_is_nil(m) && "module " VOBA_MODULE_ID " should already be there."); \
-    voba_value_t s = voba_lookup_symbol(voba_make_symbol_cstr(#sym,VOBA_NIL),voba_tail(m)); \
+    voba_value_t s = voba_lookup_symbol(voba_make_string(VOBA_CONST_CHAR(#sym)),voba_tail(m)); \
     assert(!voba_is_nil(s) && "module " VOBA_MODULE_ID " should contain symbol " #sym); \
     VOBA__SYM_VAR(sym) = s;                                             \
 }

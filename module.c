@@ -28,7 +28,7 @@ static inline int is_file_readable(voba_str_t* path)
 }
 
 
-voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, voba_str_t * pwd, voba_str_t * prefix, voba_str_t * suffix, int resolv_realpath)
+voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, voba_str_t * pwd, voba_str_t * prefix, voba_str_t * suffix, int resolv_realpath, voba_value_t attempts)
 {
     voba_str_t * ret = NULL;
     int64_t len = voba_array_len(search_path);
@@ -39,6 +39,9 @@ voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, v
         ret = voba_strcat(ret,prefix);
         ret = voba_strcat(ret,module_name);
         ret = voba_strcat(ret,suffix);
+        if(voba_is_array(attempts)){
+            voba_array_push(attempts,voba_make_string(ret));
+        }
         if(is_file_readable(ret)){
             break;
         }else{
@@ -138,22 +141,33 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
         fprintf(stderr,__FILE__ ":%d:[%s] loading module %s, cwd = %s\n", __LINE__, __FUNCTION__,module_name,
                 voba_str_to_cstr(voba_value_to_str(cwd)));
     }
+    voba_value_t attempts = voba_make_array_0();
     if(module_name[0] == '.'){
         assert(0 && "TODO");
     }else{
+        
         os_file = voba_find_file(voba_module_path(),
                                  voba_str_from_cstr(module_name),
                                  voba_value_to_str(cwd),
                                  VOBA_CONST_CHAR("lib"),
                                  VOBA_CONST_CHAR(".so"),
-                       0 // resolve realpath
+                                 0, // resolve realpath
+                                 attempts
             );
     }
     if(!os_file){
+       int64_t len = voba_array_len(attempts);
+       voba_str_t * s = voba_str_empty();
+       for(int64_t i = 0; i < len; ++i){
+           s = voba_strcat(s,VOBA_CONST_CHAR("\n"));
+           s = voba_strcat(s,voba_value_to_str(voba_array_at(attempts,i)));
+       }
         VOBA_THROW(
             VOBA_CONST_CHAR("cannot find module so file."
                             " module_name = " ),
-            voba_str_from_cstr(module_name)
+            voba_str_from_cstr(module_name),
+            VOBA_CONST_CHAR(" searching "),
+            s
             );
     }
     if(1){
@@ -179,7 +193,6 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
     }
     voba_symbol_set_value(VOBA_SYMBOL("__dir__",module), dir_name);
     voba_symbol_set_value(VOBA_SYMBOL("__file__",module), basename);
-    extern voba_value_t load_module_cc(voba_value_t (*init)(voba_value_t), voba_value_t module, voba_value_t module_cwd, voba_value_t dirname);
     voba_array_push(module_cwd,dir_name);
     return voba_try_catch(
         voba_make_closure_2(voba_init_module,((voba_value_t)init),module),
@@ -191,7 +204,7 @@ void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
 {
     voba_value_t undefined_symbols = voba_make_array_0();
     for(int i = 0; symbols[i] != NULL; ++i){
-        voba_value_t s = voba_lookup_symbol(voba_make_symbol_cstr(symbols[i],VOBA_NIL),m);
+        voba_value_t s = voba_lookup_symbol(voba_make_string(voba_str_from_cstr(symbols[i])),m);
         assert(voba_is_symbol(s));
         if(voba_is_undef(voba_symbol_value(s))){
             voba_array_push(undefined_symbols, s);
@@ -210,16 +223,23 @@ void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
     }
     return;
 }
+// - module name is used to find the dynamic library
+// - module id is used for cacheing
+// - symbols are public symbols.
+// 
+// there is a problem, one implementation could potentially be loaded
+// twice with different ids. `dlopen` might still return the same instance
 voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[])
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
+    fprintf(stderr,__FILE__ ":%d:[%s] voba_modules =  0x%lx\n", __LINE__, __FUNCTION__,voba_modules);
     voba_value_t m = voba_hash_find(voba_modules,id);
     if(voba_is_nil(m)){
         m = voba_make_symbol_table();
         voba_hash_insert(voba_modules,id,m);
-        voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);
-        voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name);
+        voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);  // id is voba_value_t of module_id
+        voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name); // name is voba_value_t of module_name
         for(int i = 0; symbols[i] != NULL; ++i){
             voba_value_t s = voba_make_symbol_cstr_with_value(symbols[i],VOBA_NIL,VOBA_UNDEF);
             voba_intern_symbol(s,m);
@@ -237,6 +257,8 @@ static voba_value_t all_symbols = VOBA_NIL;
 EXEC_ONCE_PROGN{
     all_symbols = voba_make_hash();
 };
+// this function is only useful for C module, I am not sure the use
+// case. TODO, make it useful also in compiler.c
 void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line)
 {
     fprintf(stderr, "%s:%d: define symbol %s to 0x%lx\n", file, line,
