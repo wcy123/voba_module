@@ -135,7 +135,7 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
     voba_value_t cwd = voba_array_at(module_cwd,len-1);
     voba_str_t* os_file = NULL;
     if(1){
-        fprintf(stderr,__FILE__ ":%d:[%s] loading module %s, cwd = %s\n", __LINE__, __FUNCTION__,module_name,
+        fprintf(stderr,__FILE__ ":%d:[%s] start loading module %s, cwd = %s\n", __LINE__, __FUNCTION__,module_name,
                 voba_str_to_cstr(voba_value_to_str(cwd)));
     }
     if(module_name[0] == '.'){
@@ -190,7 +190,8 @@ void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
 {
     voba_value_t undefined_symbols = voba_make_array_0();
     for(int i = 0; symbols[i] != NULL; ++i){
-        voba_value_t s = voba_lookup_symbol(voba_make_string(voba_str_from_cstr(symbols[i])),m);
+        voba_str_t * tmps = voba_c_id_decode(voba_str_from_cstr(symbols[i]));
+        voba_value_t s = voba_lookup_symbol(voba_make_string(tmps),m);
         assert(voba_is_symbol(s));
         if(voba_is_undef(voba_symbol_value(s))){
             voba_array_push(undefined_symbols, s);
@@ -220,17 +221,45 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
     voba_value_t m = voba_hash_find(voba_modules,id);
+    if(1){
+        fprintf(stderr,__FILE__ ":%d:[%s] start importing module %s(%s)\n", __LINE__, __FUNCTION__,
+                module_name,module_id);
+
+    }
     if(voba_is_nil(m)){
         m = voba_make_symbol_table();
         voba_hash_insert(voba_modules,id,m);
         voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);  // id is voba_value_t of module_id
         voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name); // name is voba_value_t of module_name
         for(int i = 0; symbols[i] != NULL; ++i){
-            voba_value_t s = voba_make_symbol_cstr_with_value(symbols[i],VOBA_NIL,VOBA_UNDEF);
+            // create an un-interned symbol
+            voba_str_t * symbol_name = voba_c_id_decode(voba_str_from_cstr(symbols[i]));
+            voba_value_t s = voba_make_symbol(symbol_name,VOBA_NIL);
+            // initialized it with undef
+            voba_symbol_set_value(s,VOBA_UNDEF);
+            // intern the symbol into the module, it is a fatal error
+            // if the symbol is already interned.
             voba_intern_symbol(s,m);
+            if(1){
+                fprintf(stderr,__FILE__ ":%d:[%s] create symbol %s for module %s(%s).\n" 
+                        ,__LINE__, __FUNCTION__,
+                        symbol_name->data,
+                        module_name,module_id);
+
+            }
         }
         voba_load_module(module_name,m);
         voba_check_symbol_defined(m,symbols);
+    }else{
+        if(1){
+            fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
+                module_name,module_id);
+        }
+    }
+    if(1){
+        fprintf(stderr,__FILE__ ":%d:[%s] importing module %s(%s) is done\n", __LINE__, __FUNCTION__,
+                module_name,module_id);
+
     }
     return m;
 }
@@ -257,6 +286,81 @@ void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const ch
         // TODO what if the symbol is already defined.
     }
     voba_symbol_set_value(symbol,value);
+}
+inline static 
+int is_id_char(char c)
+{
+    return 
+        (c >='0' && c <= '9') ||
+        (c >='A' && c <= 'Z') ||
+        (c >='a' && c <= 'z') ||
+        (c == '_');
+}
+inline static
+char id_char_high(char c)
+{
+    return "0123456789ABCDEF"[(c&0xF0)>>4];
+}
+inline static
+char id_char_low(char c)
+{
+    return "0123456789ABCDEF"[(c&0x0F)];
+}
+voba_str_t * voba_c_id_encode(voba_str_t * str)
+{
+    voba_str_t * ret = voba_str_empty();
+    int32_t i = 0;
+    assert(str->data!=NULL);
+    for(i = 0; i < str->len ; ++i){
+        if(!is_id_char(str->data[i])){
+            ret = voba_strcat_char(ret, str->data[i]);
+        }else{
+            ret = voba_strcat_char(ret, '_');
+            ret = voba_strcat_char(ret, id_char_high(str->data[i]));
+            ret = voba_strcat_char(ret, id_char_low(str->data[i]));
+        }
+    }
+    return ret;
+}
+static inline 
+int is_digit(char c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
+}
+static inline 
+char d2char(char c)
+{
+    if(c >= '0' && c <= '9') return c - '0';
+    else return c - 'A' + 10;
+}
+static inline 
+char digit2char(char h,char l)
+{
+    return (d2char(h) << 4) + d2char(l) ;
+}
+
+voba_str_t * voba_c_id_decode(voba_str_t * str)
+{
+    voba_str_t * ret = voba_str_empty();
+    int32_t i = 0;
+    assert(str->data!=NULL);
+    while(i < str->len ){
+        if(str->data[i] == '_' && i + 2 < str->len && 
+           is_digit(str->data[i+1]) && 
+           is_digit(str->data[i+2])
+           )
+        {
+            char h = str->data[i+1];
+            char l = str->data[i+2];
+            char c = digit2char(h,l);
+            ret = voba_strcat_char(ret,c);
+            i += 3;
+        }else{
+            ret = voba_strcat_char(ret,str->data[i]);
+            ++i;
+        }
+    }
+    return ret;
 }
 
 EXEC_ONCE_START;

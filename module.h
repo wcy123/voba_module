@@ -3,7 +3,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+extern voba_str_t * voba_c_id_encode(voba_str_t * str);
+extern voba_str_t * voba_c_id_decode(voba_str_t * str);
 extern voba_value_t voba_modules;
 extern voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[]);
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
@@ -42,7 +43,7 @@ EXEC_ONCE_PROGN{                                                        \
     voba_value_t id = voba_make_string(voba_str_from_cstr(VOBA_MODULE_ID)); \
     voba_value_t m = voba_hash_find(voba_modules,id);                   \
     assert(!voba_is_nil(m) && "module " VOBA_MODULE_ID " should already be there."); \
-    voba_value_t s = voba_lookup_symbol(voba_make_string(VOBA_CONST_CHAR(#sym)),voba_tail(m)); \
+    voba_value_t s = voba_lookup_symbol(voba_make_string(voba_c_id_decode(VOBA_CONST_CHAR(#sym))),voba_tail(m)); \
     assert(!voba_is_nil(s) && "module " VOBA_MODULE_ID " should contain symbol " #sym); \
     VOBA__SYM_VAR(sym) = s;                                             \
 }
