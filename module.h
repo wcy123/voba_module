@@ -3,6 +3,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+static const char VOBA_MODULE_LANG_ID[]="__lang__";
+static const char VOBA_MODULE_LANG_MATCH[]="__match__";
 extern voba_str_t * voba_c_id_encode(voba_str_t * str);
 extern voba_str_t * voba_c_id_decode(voba_str_t * str);
 extern voba_value_t voba_modules;
