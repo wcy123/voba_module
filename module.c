@@ -4,7 +4,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#define EXEC_ONCE_TU_NAME "voba_module"
+#define EXEC_ONCE_DEPENDS {"voba_value",NULL}
+#include <exec_once.h>
 #include <voba/include/value.h>
 #include "module.h"
 
@@ -75,7 +77,7 @@ static inline voba_value_t split(voba_str_t* s)
     return ret;
 }
 static voba_value_t voba_path = VOBA_NIL;
-EXEC_ONCE_PROGN {
+EXEC_ONCE_PROGN{
     const char * env = getenv("VOBA_PATH");
     if(env == NULL) {
         env = ".";
@@ -274,7 +276,6 @@ static inline void module__init_lang_module()
     voba_value_t id = voba_make_string(voba_str_from_cstr(VOBA_MODULE_LANG_ID));
     voba_value_t m = voba_make_symbol_table();
     voba_hash_insert(voba_modules,id,m);
-
     voba_make_symbol_cstr_with_value(
         VOBA_MODULE_LANG_MATCH, m, voba_make_generic_function());
 }
@@ -375,4 +376,4 @@ voba_str_t * voba_c_id_decode(voba_str_t * str)
     return ret;
 }
 
-EXEC_ONCE_START;
+
