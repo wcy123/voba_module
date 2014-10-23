@@ -53,13 +53,6 @@ EXEC_ONCE_PROGN{                                                        \
 
 
 
-#define VOBA_DEF(v,expr)                                          \
-    static voba_value_t v = VOBA_NIL;                             \
-    static void init__begin__ ##v## __init_end()                  \
-    {                                                             \
-        v = expr;                                                 \
-    }                                                             \
-    EXEC_ONCE(init__begin__ ##v## __init_end)
 
 
 
