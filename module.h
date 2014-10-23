@@ -42,17 +42,23 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
 #define VOBA__DECLARE_SYMBOL_TABLE_2(sym)                               \
 static voba_value_t VOBA__SYM_VAR(sym) = VOBA_NIL;                      \
 EXEC_ONCE_PROGN{                                                        \
-    voba_value_t id = voba_make_string(voba_str_from_cstr(VOBA_MODULE_ID)); \
-    voba_value_t m = voba_hash_find(voba_modules,id);                   \
-    assert(!voba_is_nil(m) && "module " VOBA_MODULE_ID " should already be there."); \
-    voba_value_t s = voba_lookup_symbol(voba_make_string(voba_c_id_decode(VOBA_CONST_CHAR(#sym))),voba_tail(m)); \
-    assert(!voba_is_nil(s) && "module " VOBA_MODULE_ID " should contain symbol " #sym); \
-    VOBA__SYM_VAR(sym) = s;                                             \
+    VOBA__SYM_VAR(sym) = voba_module_var(VOBA_MODULE_NAME, VOBA_MODULE_ID, #sym); \
 }
 
-
-
-
-
-
+static inline voba_value_t voba_module_var(const char * name, const char * module_id, const char * symbol_name)
+{
+    voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
+    voba_value_t m = voba_hash_find(voba_modules,id);
+    assert(!voba_is_nil(m) && "module should already be there.");
+    voba_str_t * symbol_name0 = voba_str_from_cstr(symbol_name);
+    voba_str_t * symbol_name1 = voba_c_id_decode(symbol_name0);
+    voba_value_t symbol_name2 = voba_make_string(symbol_name1);
+    voba_value_t s = voba_lookup_symbol(symbol_name2,voba_tail(m));
+    if(voba_is_nil(s)){
+        fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' module should contain symbol `%s'\n", __LINE__, __FUNCTION__,
+                name,module_id,symbol_name);
+        assert(0);
+    }
+    return s;
+}
 
