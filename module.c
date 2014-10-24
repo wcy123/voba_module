@@ -194,7 +194,7 @@ void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
     for(int i = 0; symbols[i] != NULL; ++i){
         voba_str_t * tmps = voba_c_id_decode(voba_str_from_cstr(symbols[i]));
         voba_value_t s = voba_lookup_symbol(voba_make_string(tmps),m);
-        assert(voba_is_symbol(s));
+        assert(voba_is_a(s,voba_cls_symbol));
         if(voba_is_undef(voba_symbol_value(s))){
             voba_array_push(undefined_symbols, s);
         }
