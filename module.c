@@ -9,7 +9,12 @@
 #include <exec_once.h>
 #include <voba/include/value.h>
 #include "module.h"
-
+static int voba_module_debug = 0;
+EXEC_ONCE_PROGN{
+    if(getenv("VOBA_MODULE_DEBUG") != NULL){
+        voba_module_debug = atoi(getenv("VOBA_MODULE_DEBUG"));
+    }
+}
 static inline int is_file_readable(voba_str_t* path)
 {
     const char * p = voba_str_to_cstr(path);
@@ -136,7 +141,7 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
     assert(len > 0);
     voba_value_t cwd = voba_array_at(module_cwd,len-1);
     voba_str_t* os_file = NULL;
-    if(1){
+    if(voba_module_debug){
         fprintf(stderr,__FILE__ ":%d:[%s] start loading module %s, cwd = %s\n", __LINE__, __FUNCTION__,module_name,
                 voba_str_to_cstr(voba_value_to_str(cwd)));
     }
@@ -158,7 +163,7 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
             voba_str_from_cstr(module_name)
             );
     }
-    if(1){
+    if(voba_module_debug){
         fprintf(stderr,__FILE__ ":%d:[%s] found module %s\n", __LINE__, __FUNCTION__,voba_str_to_cstr(os_file));
     }
     voba_value_t filename =  voba_make_string(os_file);
@@ -223,7 +228,7 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
     voba_value_t m = voba_hash_find(voba_modules,id);
-    if(1){
+    if(voba_module_debug){
         fprintf(stderr,__FILE__ ":%d:[%s] start importing module %s(%s)\n", __LINE__, __FUNCTION__,
                 module_name,module_id);
 
@@ -242,7 +247,7 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
             // intern the symbol into the module, it is a fatal error
             // if the symbol is already interned.
             voba_intern_symbol(s,m);
-            if(1){
+            if(voba_module_debug){
                 fprintf(stderr,__FILE__ ":%d:[%s] create symbol %s for module %s(%s).\n" 
                         ,__LINE__, __FUNCTION__,
                         symbol_name->data,
@@ -253,12 +258,12 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
         voba_load_module(module_name,m);
         voba_check_symbol_defined(m,symbols);
     }else{
-        if(1){
+        if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
                 module_name,module_id);
         }
     }
-    if(1){
+    if(voba_module_debug){
         fprintf(stderr,__FILE__ ":%d:[%s] importing module %s(%s) is done\n", __LINE__, __FUNCTION__,
                 module_name,module_id);
 
@@ -288,9 +293,11 @@ EXEC_ONCE_PROGN{
 // case. TODO, make it useful also in compiler.c
 void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line)
 {
-    fprintf(stderr, "%s:%d: define symbol %s to 0x%lx\n", file, line,
-            voba_str_to_cstr(voba_value_to_str(voba_symbol_name(symbol))),
-            value);
+    if(voba_module_debug){
+        fprintf(stderr, "%s:%d: define symbol %s to 0x%lx\n", file, line,
+                voba_str_to_cstr(voba_value_to_str(voba_symbol_name(symbol))),
+                value);
+    }
     voba_value_t v = voba_hash_find(all_symbols,symbol);
     if(voba_is_nil(v)){
         voba_hash_insert(all_symbols,symbol,voba_make_array_3(value,voba_make_string(voba_str_from_cstr(file)),voba_make_i32(line)));
