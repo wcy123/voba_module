@@ -35,10 +35,6 @@ CFLAGS += -D_BSD_SOURCE # otherwise realpath is not defined.
 
 all: install
 
-install: libvoba_module.so
-	install libvoba_module.so $(PREFIX)/voba/lib/
-	install module.h $(PREFIX)/voba/include/module.h
-	install module_end.h $(PREFIX)/voba/include/module_end.h
 
 libvoba_module.so: module.o
 	$(CXX) -shared -Wl,-soname,$@  -o $@ $+
@@ -50,3 +46,17 @@ clean:
 	rm *.o *.so
 
 .PHONY: all clean
+
+
+INSTALL_FILES += $(PREFIX)/voba/lib/libvoba_module.so
+INSTALL_FILES += $(PREFIX)/voba/include/module.h
+INSTALL_FILES += $(PREFIX)/voba/include/module_end.h
+
+install: $(INSTALL_FILES)
+
+$(PREFIX)/voba/lib/libvoba_module.so:  libvoba_module.so
+	install libvoba_module.so $(PREFIX)/voba/lib/
+$(PREFIX)/voba/include/module.h: module.h
+	install module.h $(PREFIX)/voba/include/module.h
+$(PREFIX)/voba/include/module_end.h: module_end.h
+	install module_end.h $(PREFIX)/voba/include/module_end.h
