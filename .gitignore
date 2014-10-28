@@ -1,3 +1,4 @@
 src/voba_module_lex.c
 *.so
 *.o
+depend.inc

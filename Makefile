@@ -35,8 +35,9 @@ CFLAGS += -D_BSD_SOURCE # otherwise realpath is not defined.
 
 all: install
 
-
-libvoba_module.so: module.o
+C_SRCS += module.c
+OBJS += $(patsubst %.c,%.o,$(C_SRCS))
+libvoba_module.so: $(OBJS)
 	$(CXX) -shared -Wl,-soname,$@  -o $@ $+
 
 module.o: module.c module.h
@@ -60,3 +61,8 @@ $(PREFIX)/voba/include/module.h: module.h
 	install module.h $(PREFIX)/voba/include/module.h
 $(PREFIX)/voba/include/module_end.h: module_end.h
 	install module_end.h $(PREFIX)/voba/include/module_end.h
+
+.PHONY: depend
+depend: 
+	for i in $(C_SRCS); do $(CC) -MM $(CFLAGS) $$i; done > $@.inc
+-include depend.inc
