@@ -14,13 +14,6 @@ CXXFLAGS += $(INCLUDE)
 FLAGS += -Wall -Werror
 FLAGS += -fPIC
 
-ifneq ($(CONFIG),release)
-	CFLAGS += -ggdb -O0
-	CXXFLAGS += -ggdb -O0
-else
-	CFLAGS += -O3 -DNDEBUG
-	CXXFLAGS += -O3 -DNDEBUG
-endif
 
 CFLAGS += -std=c99
 CFLAGS += $(FLAGS)
@@ -38,7 +31,7 @@ all: install
 C_SRCS += module.c
 OBJS += $(patsubst %.c,%.o,$(C_SRCS))
 libvoba_module.so: $(OBJS)
-	$(CXX) -shared -Wl,-soname,$@  -o $@ $+
+	$(CXX) -shared -Wl,-soname,$@  -o $@ $+ $(LDFLAGS)
 
 module.o: module.c module.h
 

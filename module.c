@@ -255,8 +255,10 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
 
             }
         }
+#ifndef VOBA_MODULE_DIRTY_HACK
         voba_load_module(module_name,m);
         voba_check_symbol_defined(m,symbols);
+#endif
     }else{
         if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
@@ -282,7 +284,7 @@ static inline void module__init_lang_module()
     voba_value_t m = voba_make_symbol_table();
     voba_hash_insert(voba_modules,id,m);
     voba_make_symbol_cstr_with_value(
-        VOBA_MODULE_LANG_MATCH, m, voba_make_generic_function(VOBA_MODULE_LANG_MATCH));
+        VOBA_MODULE_LANG_MATCH, m, voba_make_generic_function(VOBA_MODULE_LANG_MATCH,NULL));
 }
 
 static voba_value_t all_symbols = VOBA_NIL;

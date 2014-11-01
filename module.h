@@ -49,7 +49,12 @@ static inline voba_value_t voba_module_var(const char * name, const char * modul
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t m = voba_hash_find(voba_modules,id);
-    assert(!voba_is_nil(m) && "module should already be there.");
+    if(voba_is_nil(m)){
+        fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' should already be there.", __LINE__, __FUNCTION__
+                ,name,module_id);
+        fprintf(stderr,__FILE__ );
+        // abort(0);
+    }
     voba_str_t * symbol_name0 = voba_str_from_cstr(symbol_name);
     voba_str_t * symbol_name1 = voba_c_id_decode(symbol_name0);
     voba_value_t symbol_name2 = voba_make_string(symbol_name1);
@@ -57,7 +62,7 @@ static inline voba_value_t voba_module_var(const char * name, const char * modul
     if(voba_is_nil(s)){
         fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' module should contain symbol `%s'\n", __LINE__, __FUNCTION__,
                 name,module_id,symbol_name);
-        assert(0);
+        //abort(0);
     }
     return s;
 }
