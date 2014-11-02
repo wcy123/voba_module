@@ -81,13 +81,15 @@ static inline voba_value_t split(voba_str_t* s)
     }
     return ret;
 }
+extern voba_value_t voba_init_path_from_env(const char* path)
+{
+    return split(voba_str_from_cstr(path));
+}
 static voba_value_t voba_path = VOBA_NIL;
 EXEC_ONCE_PROGN{
     const char * env = getenv("VOBA_PATH");
-    if(env == NULL) {
-        env = ".";
-    }
-    voba_path = split(voba_str_from_cstr(env));
+    if(!env){ env = ".";}
+    voba_path = voba_init_path_from_env(env);
 }
 voba_value_t voba_module_path()
 {
