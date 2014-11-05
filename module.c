@@ -287,6 +287,8 @@ static inline void module__init_lang_module()
     voba_hash_insert(voba_modules,id,m);
     voba_make_symbol_cstr_with_value(
         VOBA_MODULE_LANG_MATCH, m, voba_make_generic_function(VOBA_MODULE_LANG_MATCH,NULL));
+    voba_make_symbol_cstr_with_value(
+        VOBA_MODULE_LANG_ITER, m, voba_make_generic_function(VOBA_MODULE_LANG_ITER,NULL));
 }
 
 static voba_value_t all_symbols = VOBA_NIL;
