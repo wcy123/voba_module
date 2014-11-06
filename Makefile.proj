@@ -1,0 +1,31 @@
+CXXFLAGS += -fPIC
+CFLAGS += -fPIC
+
+CFLAGS += -D_BSD_SOURCE # otherwise realpath is not defined.
+
+SRCS_C += module.c
+
+
+libvoba_module.so: $(OBJS)
+	$(CC) -shared -Wl,-soname,$@ -o $@ $^  $(LDFLAGS)
+
+
+install_files += $(libdir)/libvoba_module.so
+$(libdir)/libvoba_module.so: libvoba_module.so
+	$(INSTALL) $< $@
+
+header_files := module.h module_end.h
+
+target_header_files += $(patsubst  %, $(includedir)/voba/%, $(header_files))
+install_files += $(target_header_files)
+$(target_header_files): $(includedir)/voba/% : %
+	$(INSTALL) $< $@
+
+
+dirs += $(includedir)/voba
+
+
+# Local Variables:
+# mode:makefile
+# coding: utf-8-unix
+# End:

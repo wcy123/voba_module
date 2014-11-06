@@ -13,11 +13,12 @@ extern voba_value_t voba_import_module(const char * module_name, const char * mo
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
 extern voba_value_t voba_module_path();
 extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
-                                   voba_str_t * name, // name
-                                   voba_str_t * cwd,// current working directory
-                                   voba_str_t * prefix,
-                                   voba_str_t * suffix,
-                                   int resolv_realpath
+                                  voba_str_t * name, // name
+                                  voba_str_t * cwd,// current working directory
+                                  voba_str_t * prefix,
+                                  voba_str_t * suffix,
+                                  int resolv_realpath,
+                                  voba_value_t attempts
     );
 extern voba_value_t voba_init_path_from_env(const char*);
 #define VOBA_DEFINE_MODULE_SYMBOL(s,v) voba_define_module_symbol(s,v,__FILE__,__LINE__)

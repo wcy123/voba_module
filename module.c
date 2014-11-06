@@ -7,7 +7,7 @@
 #define EXEC_ONCE_TU_NAME "voba_module"
 #define EXEC_ONCE_DEPENDS {"voba_value",NULL}
 #include <exec_once.h>
-#include <voba/include/value.h>
+#include <voba/value.h>
 #include "module.h"
 static int voba_module_debug = 0;
 EXEC_ONCE_PROGN{
@@ -35,7 +35,7 @@ static inline int is_file_readable(voba_str_t* path)
 }
 
 
-voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, voba_str_t * pwd, voba_str_t * prefix, voba_str_t * suffix, int resolv_realpath)
+voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, voba_str_t * pwd, voba_str_t * prefix, voba_str_t * suffix, int resolv_realpath, voba_value_t attempts)
 {
     voba_str_t * ret = NULL;
     int64_t len = voba_array_len(search_path);
@@ -49,6 +49,7 @@ voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, v
         if(is_file_readable(ret)){
             break;
         }else{
+            voba_array_push(attempts, voba_make_string(ret));
             ret = NULL;
         }
     }
@@ -147,6 +148,7 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
         fprintf(stderr,__FILE__ ":%d:[%s] start loading module %s, cwd = %s\n", __LINE__, __FUNCTION__,module_name,
                 voba_str_to_cstr(voba_value_to_str(cwd)));
     }
+    voba_value_t attempts = voba_make_array_0();
     if(module_name[0] == '.'){
         assert(0 && "TODO");
     }else{
@@ -155,14 +157,24 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
                                  voba_value_to_str(cwd),
                                  VOBA_CONST_CHAR("lib"),
                                  VOBA_CONST_CHAR(".so"),
-                       0 // resolve realpath
+                                 0, // resolve realpath
+                                 attempts
             );
     }
     if(!os_file){
+        int64_t len2 = voba_array_len(attempts);
+        voba_str_t * s = voba_str_empty();
+        for(int64_t i = 0; i < len2; ++i){
+            s = voba_strcat(s, VOBA_CONST_CHAR("    "));
+            s = voba_strcat(s, voba_value_to_str(voba_array_at(attempts,i)));
+            s = voba_strcat(s, VOBA_CONST_CHAR("\n"));
+        }
         VOBA_THROW(
             VOBA_CONST_CHAR("cannot find module so file."
                             " module_name = " ),
-            voba_str_from_cstr(module_name)
+            voba_str_from_cstr(module_name),
+            VOBA_CONST_CHAR(", attemps to load from :\n"),
+            s
             );
     }
     if(voba_module_debug){
