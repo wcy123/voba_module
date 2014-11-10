@@ -128,8 +128,8 @@ EXEC_ONCE_PROGN{
 static VOBA_FUNC voba_value_t voba_init_module(voba_value_t self, voba_value_t args)
 {
     voba_value_t (*init)(voba_value_t);
-    *(void **) (&init) = (void*)(voba_array_at(self,0));
-    voba_value_t module = voba_array_at(self,1);
+    *(void **) (&init) = (void*)(voba_tuple_at(self,0));
+    voba_value_t module = voba_tuple_at(self,1);
     return init(module);
 }
 static VOBA_FUNC voba_value_t pop_cwd(voba_value_t self, voba_value_t args)
