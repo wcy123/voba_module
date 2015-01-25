@@ -24,6 +24,11 @@ $(target_header_files): $(includedir)/voba/% : %
 
 dirs += $(includedir)/voba
 
+.PHONY: test
+test:
+	(cd examples/ex1;sh -x build.sh)
+	(cd examples/ex2;sh -x build.sh)
+
 
 # Local Variables:
 # mode:makefile
