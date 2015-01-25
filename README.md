@@ -2,6 +2,8 @@
 
 The module system for voba language.
 
+see the doxygen version at <https://wcy123.github.io/voba_module>
+
 ## The first module 
 
 ### create a module header file
