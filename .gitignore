@@ -32,3 +32,6 @@ depend.inc
 *.i*86
 *.x86_64
 *.hex
+doxygen_sqlite3.db
+examples/ex1/ex1
+examples/ex2/ex2
