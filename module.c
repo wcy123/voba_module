@@ -46,7 +46,15 @@ voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, v
         ret = voba_strcat(ret,prefix);
         ret = voba_strcat(ret,module_name);
         ret = voba_strcat(ret,suffix);
-        if(is_file_readable(ret)){
+        int is_ok = is_file_readable(ret);
+        if(voba_module_debug){
+            fprintf(stderr,__FILE__ ":%d:[%s] trying to load so file %s for module %s %s.\n"
+                    , __LINE__, __FUNCTION__
+                    ,voba_str_to_cstr(ret)
+                    ,voba_str_to_cstr(module_name)
+                    ,is_ok?" is found":" is not found");
+        }
+        if(is_ok){
             break;
         }else{
             voba_array_push(attempts, voba_make_string(ret));
