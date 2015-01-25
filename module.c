@@ -35,17 +35,35 @@ static inline int is_file_readable(voba_str_t* path)
 }
 
 
-voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, voba_str_t * pwd, voba_str_t * prefix, voba_str_t * suffix, int resolv_realpath, voba_value_t attempts)
+static inline voba_value_t dir_and_base_name(voba_str_t* filename);
+static inline voba_str_t* compose_filename(voba_str_t* path,
+                                           voba_str_t* module_dirname,
+                                           voba_str_t* module_basename,
+                                           voba_str_t* prefix,
+                                           voba_str_t* suffix);
+voba_str_t* voba_find_file(voba_value_t search_path,
+                           voba_str_t * module_name,
+                           voba_str_t * pwd,
+                           voba_str_t * prefix,
+                           voba_str_t * suffix,
+                           int resolv_realpath,
+                           voba_value_t attempts)
 {
     voba_str_t * ret = NULL;
+    voba_value_t tmp = dir_and_base_name(module_name);
+    voba_value_t module_dirname = voba_head(tmp);
+    voba_value_t module_basename = voba_tail(tmp);
+    if(module_name->data[0] == '.'){
+        search_path = voba_make_array_1(voba_make_string(pwd));
+    }
     int64_t len = voba_array_len(search_path);
     voba_value_t * p = voba_array_base(search_path);
     for(int64_t i = 0; i < len ; ++i){
-        ret = voba_strdup(voba_value_to_str(p[i]));
-        ret = voba_strcat_char(ret,'/');
-        ret = voba_strcat(ret,prefix);
-        ret = voba_strcat(ret,module_name);
-        ret = voba_strcat(ret,suffix);
+        ret = compose_filename(voba_value_to_str(p[i]),
+                               voba_value_to_str(module_dirname),
+                               voba_value_to_str(module_basename),
+                               prefix,
+                               suffix);
         int is_ok = is_file_readable(ret);
         if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] trying to load so file %s for module %s %s.\n"
@@ -73,7 +91,22 @@ voba_str_t* voba_find_file(voba_value_t search_path, voba_str_t * module_name, v
     }
     return ret;
 }
-
+static inline voba_str_t* compose_filename(voba_str_t* path,
+                                           voba_str_t* module_dirname,
+                                           voba_str_t* module_basename,
+                                           voba_str_t* prefix,
+                                           voba_str_t* suffix)
+{
+    voba_str_t* ret =NULL;
+    ret = voba_strdup(path);
+    ret = voba_strcat_char(ret,'/');
+    ret = voba_strcat(ret,module_dirname);
+    ret = voba_strcat_char(ret,'/');
+    ret = voba_strcat(ret,prefix);
+    ret = voba_strcat(ret,module_basename);
+    ret = voba_strcat(ret,suffix);
+    return ret;
+}
 static inline voba_value_t split(voba_str_t* s)
 {
     voba_value_t ret = voba_make_array_0();
@@ -157,18 +190,13 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
                 voba_str_to_cstr(voba_value_to_str(cwd)));
     }
     voba_value_t attempts = voba_make_array_0();
-    if(module_name[0] == '.'){
-        assert(0 && "TODO");
-    }else{
-        os_file = voba_find_file(voba_module_path(),
-                                 voba_str_from_cstr(module_name),
-                                 voba_value_to_str(cwd),
-                                 VOBA_CONST_CHAR("lib"),
-                                 VOBA_CONST_CHAR(".so"),
-                                 0, // resolve realpath
-                                 attempts
-            );
-    }
+    os_file = voba_find_file(voba_module_path(),
+                             voba_str_from_cstr(module_name),
+                             voba_value_to_str(cwd),
+                             VOBA_CONST_CHAR("lib"),
+                             VOBA_CONST_CHAR(".so"),
+                             0, // resolve realpath
+                             attempts);
     if(!os_file){
         int64_t len2 = voba_array_len(attempts);
         voba_str_t * s = voba_str_empty();

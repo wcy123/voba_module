@@ -13,7 +13,7 @@ extern voba_value_t voba_import_module(const char * module_name, const char * mo
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
 extern voba_value_t voba_module_path();
 extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
-                                  voba_str_t * name, // name
+                                  voba_str_t * module_name, // name
                                   voba_str_t * cwd,// current working directory
                                   voba_str_t * prefix,
                                   voba_str_t * suffix,
