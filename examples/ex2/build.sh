@@ -7,7 +7,7 @@ gcc -I ../../../build/include -I. -std=c99 -fPIC -o m2/_private/libfoo.so -share
 gcc -I ../../../build/include -std=c99 -o ex2 ex2.c \
     -L ../../../build/lib  $LDFLAGS -lexec_once -lgc -lvoba_value -lvoba_module -ldl
 #export EXEC_ONCE_DEBUG=1
-#export VOBA_PATH=.
+export VOBA_PATH=.
 #export CONFIG=release
 #export YY_FLEX_DEBUG=0
 #export VOBA_MODULE_DEBUG=1

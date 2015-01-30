@@ -1,4 +1,4 @@
-#define EXEC_ONCE_TU_NAME "hello"
+#define EXEC_ONCE_TU_NAME "m1/main"
 #include <voba/value.h>
 #include "m1/main.h"
 #include "_private/foo.h"
