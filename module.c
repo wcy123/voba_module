@@ -306,10 +306,8 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
 
             }
         }
-#ifndef VOBA_MODULE_DIRTY_HACK
         voba_load_module(module_name,m);
         voba_check_symbol_defined(m,symbols);
-#endif
     }else{
         if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
