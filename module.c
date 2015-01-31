@@ -301,8 +301,7 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
             if(voba_module_debug){
                 fprintf(stderr,__FILE__ ":%d:[%s] create symbol %s(0x%lx) for module %s(%s), symbol value is undef.\n" 
                         ,__LINE__, __FUNCTION__,
-                        s,
-                        symbol_name->data,
+                        symbol_name->data,s,
                         module_name,module_id);
 
             }
