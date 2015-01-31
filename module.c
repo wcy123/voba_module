@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#define EXEC_ONCE_TU_NAME "voba_module"
-#define EXEC_ONCE_DEPENDS {"voba_value",NULL}
+#define EXEC_ONCE_TU_NAME "voba.module"
+#define EXEC_ONCE_DEPENDS {"voba.value",NULL}
 #include <exec_once.h>
 #include <voba/value.h>
 #include "module.h"
@@ -307,10 +307,8 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
 
             }
         }
-#ifndef VOBA_MODULE_DIRTY_HACK
         voba_load_module(module_name,m);
         voba_check_symbol_defined(m,symbols);
-#endif
     }else{
         if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
