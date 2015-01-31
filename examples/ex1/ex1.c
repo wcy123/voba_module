@@ -1,4 +1,5 @@
 #define EXEC_ONCE_TU_NAME "main"
+#define EXEC_ONCE_DEPENDS {"voba.module",NULL}
 #include <voba/value.h>
 #include "hello.h"
 int main(int argc, char *argv[])

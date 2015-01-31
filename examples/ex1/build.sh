@@ -1,5 +1,5 @@
-gcc -I ../../../build/include -std=c99 -fPIC -o libhello.so -shared hello.c
-gcc -I ../../../build/include -std=c99 -o ex1 ex1.c \
+gcc -I ../../../build/include -std=c99 -fPIC -ggdb -O0 -o libhello.so -shared hello.c
+gcc -I ../../../build/include -std=c99 -ggdb -O0 -o ex1 ex1.c \
     -L ../../../build/lib $LDFLAGS -lexec_once -lgc -lvoba_value -ldl -lvoba_module
 export EXEC_ONCE_DEBUG=1
 export VOBA_PATH=.
