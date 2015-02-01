@@ -385,7 +385,7 @@ voba_str_t * voba_c_id_encode(voba_str_t * str)
     int32_t i = 0;
     assert(str->data!=NULL);
     for(i = 0; i < str->len ; ++i){
-        if(!is_id_char(str->data[i])){
+        if(is_id_char(str->data[i])){
             ret = voba_strcat_char(ret, str->data[i]);
         }else{
             ret = voba_strcat_char(ret, '_');
