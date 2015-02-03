@@ -120,9 +120,9 @@ extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search p
   @param file The file name where the symbol is defined.
   @param line The line number where the symbol is defined.
 
-  ::voba_symbol_set_value is the low level function, this function also
-  checked if the symbol is already initialized, i.e. its value is
-  something other than ::VOBA_UNDEF
+  This function checks if the symbol is already initialized, i.e. its
+  value is something other than ::VOBA_UNDEF. This function uses
+  ::voba_symbol_set_value to set the symbol value.
 
  */
 extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line);
