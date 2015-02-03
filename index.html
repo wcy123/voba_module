@@ -77,6 +77,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The module system for voba language.</p>
+<p>see the doxygen version at <a href="https://wcy123.github.io/voba_module">https://wcy123.github.io/voba_module</a></p>
 <h2>The first module</h2>
 <h3>create a module header file</h3>
 <p>see <code>examples/ex1/hello.h</code></p>
@@ -168,6 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
         └── libfoo.so (shared library for ./_private/foo)
 </pre><h4>ex2.c</h4>
 <p><code> </p><div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;main&quot;</span></div>
+<div class="line"><span class="preprocessor">#define EXEC_ONCE_DEPENDS {&quot;voba.module&quot;}</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m1/main.h&quot;</span> <span class="comment">// import m1/main</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m2/main.h&quot;</span> <span class="comment">// import m2/main</span></div>
@@ -210,7 +212,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ol>
 <p>Note that the uuid of <code>m1/main</code> and <code>m2/main</code> must be different.</p>
 <ol type="1">
-<li>m1/main.c <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
+<li>m1/main.c <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m1/main&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m1/main.h&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;_private/foo.h&quot;</span></div>
@@ -232,7 +234,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --> </code></li>
 </ol>
 <ol type="1">
-<li>m2/main.c <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
+<li>m2/main.c <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m2/main&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m2/main.h&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;_private/foo.h&quot;</span></div>
@@ -283,7 +285,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ol>
 <p>Note that the uuid is not same, but the module name is same, <code>./_private/foo</code>. It is a private module so the names are not conflicts, one <code>./_private/foo</code> is relative to <code>m1/main</code>, the other is relative to <code>m2/main</code></p>
 <ol type="1">
-<li><code>m1/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
+<li><code>m1/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m1/foo&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;foo.h&quot;</span></div>
 <div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t foo(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
@@ -302,7 +304,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --> </code></li>
 </ol>
 <ol type="1">
-<li><code>m2/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
+<li><code>m2/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m2/foo&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;foo.h&quot;</span></div>
 <div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t foo(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
@@ -328,9 +330,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">gcc -I ../../../build/include -I. -std=c99 -fPIC -o m2/libmain.so -shared m2/main.c</div>
 <div class="line">gcc -I ../../../build/include -I. -std=c99 -fPIC -o m2/_private/libfoo.so -shared m2/_private/foo.c</div>
 <div class="line">gcc -I ../../../build/include -std=c99 -o ex2 ex2.c \</div>
-<div class="line">    -L ../../../build/lib -lexec_once -lgc -lvoba_value -lvoba_module</div>
+<div class="line">    -L ../../../build/lib  $LDFLAGS -lexec_once -lgc -lvoba_value -lvoba_module -ldl</div>
 <div class="line">#export EXEC_ONCE_DEBUG=1</div>
-<div class="line">#export VOBA_PATH=.</div>
+<div class="line">export VOBA_PATH=.</div>
 <div class="line">#export CONFIG=release</div>
 <div class="line">#export YY_FLEX_DEBUG=0</div>
 <div class="line">#export VOBA_MODULE_DEBUG=1</div>
@@ -367,7 +369,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --> </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jan 25 2015 20:18:00 for the module system for language voba by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Feb 3 2015 22:49:08 for the module system for language voba by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
