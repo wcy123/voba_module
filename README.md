@@ -6,7 +6,7 @@ see the doxygen version at <https://wcy123.github.io/voba_module>
 
 ## The first module 
 
-### create a module header file
+### declare a module
 
 see `examples/ex1/hello.h`
 
@@ -24,12 +24,13 @@ It is a simple C header file and it defines 3 macros.
 1. `VOBA_MODULE_ID`: it is a unique id. It is generated, e.g. by
    ```uuidgen -t```
 2. `VOBA_SYMBOL_TABLE(XX)`: A macro to define a set of symbols.
-3. `VOBA_MODULE_NAME`: name of a module.
+3. `VOBA_MODULE_NAME`: The name of the module.
 4. we must have `voba/module_end.h` in the end.
 
 ### define the module
 
 see `examples\ex1\hello.c`
+
 ~~~{.c}
 #define EXEC_ONCE_TU_NAME "hello"
 #include <voba/value.h>
@@ -53,7 +54,7 @@ voba_value_t voba_init(voba_value_t this_module)
 
 For `EXEC_ONCE_PROGN` and `EXEC_ONCE_PROGN`, refer to <https://github.com/wcy123/exec_once.git>
 
-The module definition must import/include the module head file by
+The module definition must import(include) the module head file by
 itself.
 
 The symbol `hello_world` is prefixed with `s_` for C identifier.
@@ -77,6 +78,7 @@ see `examples\ex1\ex1.c`
 
 ~~~{.c}
 #define EXEC_ONCE_TU_NAME "main"
+#define EXEC_ONCE_DEPENDS {"voba.module"}
 #include <voba/value.h>
 #include "hello.h"
 int main(int argc, char *argv[])
@@ -236,6 +238,9 @@ hello from module 2
 hello from m2/foo.
 ~~~
 
+## C APIs
+
+see module.h
 
 ## dependency
 

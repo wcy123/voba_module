@@ -179,7 +179,7 @@ static VOBA_FUNC voba_value_t pop_cwd(voba_value_t self, voba_value_t args)
     voba_array_pop(cwd);
     return VOBA_NIL;
 }
-voba_value_t voba_load_module(const char * module_name,voba_value_t module)
+static voba_value_t voba_load_module(const char * module_name,voba_value_t module)
 {
     int64_t len = voba_array_len(module_cwd);
     assert(len > 0);
@@ -245,17 +245,13 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
 }
 static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbols);
 /**
-
- - module name is used to find the dynamic library
- - module id is used for cacheing
- - symbols are public symbols.
  
  @bug there is a problem, one implementation could potentially be loaded
  twice with different ids. `dlopen` might still return the same instance
 
 
  */
-voba_value_t voba_import_module(const char * module_name, const char * module_id, voba_value_t symbols)
+voba_value_t voba_import_module(const char * module_name, const char * module_id, voba_value_t symbol_names)
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
@@ -270,10 +266,10 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
         voba_hash_insert(voba_modules,id,m);
         voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);  // id is voba_value_t of module_id
         voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name); // name is voba_value_t of module_name
-        int64_t len = voba_tuple_len(symbols);
+        int64_t len = voba_tuple_len(symbol_names);
         for(int64_t i = 0; i < len; ++i){
             // create an un-interned symbol
-            voba_str_t * symbol_name = voba_value_to_str(voba_tuple_at(symbols,i));
+            voba_str_t * symbol_name = voba_value_to_str(voba_tuple_at(symbol_names,i));
             voba_value_t s = voba_make_symbol(symbol_name,VOBA_NIL);
             // initialized it with undef
             voba_symbol_set_value(s,VOBA_UNDEF);
@@ -289,7 +285,7 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
             }
         }
         voba_load_module(module_name,m);
-        voba_check_symbol_defined(m,symbols);
+        voba_check_symbol_defined(m,symbol_names);
     }else{
         if(voba_module_debug){
             fprintf(stderr,__FILE__ ":%d:[%s] module %s(%s) is already loaded or being loaded\n", __LINE__, __FUNCTION__,
