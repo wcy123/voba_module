@@ -1,4 +1,5 @@
 #pragma once
+#include <assert.h>
 #include <exec_once.h>
 #ifdef __cplusplus
 extern "C" {
@@ -94,7 +95,12 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
 #define VOBA__DECLARE_SYMBOL_TABLE_2(sym)                               \
 static voba_value_t VOBA__SYM_VAR(sym) = VOBA_NIL;                      \
 EXEC_ONCE_PROGN{                                                        \
-    VOBA__SYM_VAR(sym) = voba_module_var(VOBA_MODULE_NAME, VOBA_MODULE_ID, voba_make_string(voba_str_from_cstr(#sym))); \
+    VOBA__SYM_VAR(sym) = \
+        voba_module_var(VOBA_MODULE_NAME,                               \
+                        VOBA_MODULE_ID,                                 \
+                        voba_make_string(                               \
+                            voba_c_id_decode(                           \
+                                voba_str_from_cstr(#sym))));            \
 }
 /** return a symbol of in a module
     
@@ -108,18 +114,18 @@ static inline voba_value_t voba_module_var(const char * module_name, const char 
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t m = voba_hash_find(voba_modules,id);
-    // assert(voba_is_a(symbol_name,voba_cls_str); // I don't want to include <assert.h> yet.
+    assert(voba_is_a(symbol_name,voba_cls_str));
     if(voba_is_nil(m)){
         fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' should already be there.", __LINE__, __FUNCTION__
                 ,module_name,module_id);
         fprintf(stderr,__FILE__ );
-        // abort(0);
+        abort();
     }
     voba_value_t s = voba_lookup_symbol(symbol_name,voba_tail(m));
     if(voba_is_nil(s)){
         fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' module should contain symbol `%s'\n", __LINE__, __FUNCTION__,
                 module_name, module_id, voba_str_to_cstr(voba_value_to_str(symbol_name)));
-        //abort(0);
+        abort();
     }
     return s;
 }
