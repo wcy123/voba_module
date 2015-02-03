@@ -243,38 +243,19 @@ voba_value_t voba_load_module(const char * module_name,voba_value_t module)
         voba_make_closure_1(pop_cwd,module_cwd)
         );
 }
-static inline
-void voba_check_symbol_defined(voba_value_t m, const char * symbols[])
-{
-    voba_value_t undefined_symbols = voba_make_array_0();
-    for(int i = 0; symbols[i] != NULL; ++i){
-        voba_str_t * tmps = voba_c_id_decode(voba_str_from_cstr(symbols[i]));
-        voba_value_t s = voba_lookup_symbol(voba_make_string(tmps),m);
-        assert(voba_is_a(s,voba_cls_symbol));
-        if(voba_is_undef(voba_symbol_value(s))){
-            voba_array_push(undefined_symbols, s);
-        }
-    }
-    int64_t len = voba_array_len(undefined_symbols);
-    if(len > 0 ) {
-        voba_str_t *s = voba_str_empty();
-        for(int64_t i = 0; i < len ; ++i){
-            s = voba_strcat_char(s,' ');
-            s = voba_strcat(s,voba_value_to_str(voba_symbol_name(voba_array_at(undefined_symbols,i))));
-        }
-        VOBA_THROW(
-            VOBA_CONST_CHAR("import_module: undefined symbol(s)."),
-            s);
-    }
-    return;
-}
-// - module name is used to find the dynamic library
-// - module id is used for cacheing
-// - symbols are public symbols.
-// 
-// there is a problem, one implementation could potentially be loaded
-// twice with different ids. `dlopen` might still return the same instance
-voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[])
+static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbols);
+/**
+
+ - module name is used to find the dynamic library
+ - module id is used for cacheing
+ - symbols are public symbols.
+ 
+ @bug there is a problem, one implementation could potentially be loaded
+ twice with different ids. `dlopen` might still return the same instance
+
+
+ */
+voba_value_t voba_import_module(const char * module_name, const char * module_id, voba_value_t symbols)
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t name = voba_make_string(voba_str_from_cstr(module_name));
@@ -289,9 +270,10 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
         voba_hash_insert(voba_modules,id,m);
         voba_symbol_set_value(VOBA_SYMBOL("__id__",m), id);  // id is voba_value_t of module_id
         voba_symbol_set_value(VOBA_SYMBOL("__name__",m), name); // name is voba_value_t of module_name
-        for(int i = 0; symbols[i] != NULL; ++i){
+        int64_t len = voba_tuple_len(symbols);
+        for(int64_t i = 0; i < len; ++i){
             // create an un-interned symbol
-            voba_str_t * symbol_name = voba_c_id_decode(voba_str_from_cstr(symbols[i]));
+            voba_str_t * symbol_name = voba_value_to_str(voba_tuple_at(symbols,i));
             voba_value_t s = voba_make_symbol(symbol_name,VOBA_NIL);
             // initialized it with undef
             voba_symbol_set_value(s,VOBA_UNDEF);
@@ -321,6 +303,31 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
     }
     return m;
 }
+static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbols)
+{
+    voba_value_t undefined_symbols = voba_make_array_0();
+    int64_t len = voba_tuple_len(symbols);
+    for(int64_t i = 0; i < len; ++i){
+        voba_value_t s = voba_lookup_symbol(voba_tuple_at(symbols,i),m);
+        assert(voba_is_a(s,voba_cls_symbol));
+        if(voba_is_undef(voba_symbol_value(s))){
+            voba_array_push(undefined_symbols, s);
+        }
+    }
+    len = voba_array_len(undefined_symbols);
+    if(len > 0 ) {
+        voba_str_t *s = voba_str_empty();
+        for(int64_t i = 0; i < len ; ++i){
+            s = voba_strcat_char(s,' ');
+            s = voba_strcat(s,voba_value_to_str(voba_symbol_name(voba_array_at(undefined_symbols,i))));
+        }
+        VOBA_THROW(
+            VOBA_CONST_CHAR("import_module: undefined symbol(s)."),
+            s);
+    }
+    return;
+}
+
 voba_value_t voba_modules = VOBA_NIL;
 static inline void module__init_lang_module();
 EXEC_ONCE_PROGN{

@@ -10,19 +10,26 @@ static const char VOBA_MODULE_LANG_ITER[]="__iter__";
 /** a pair of functions for simple decode/encode of c identifier */    
 extern voba_str_t * voba_c_id_encode(voba_str_t * str);
 extern voba_str_t * voba_c_id_decode(voba_str_t * str);
-/** the all modules, a hash table */    
+/** the all modules, a symbol table */    
 extern voba_value_t voba_modules;
 /** import a module 
     
-    if the module is already loaded, do nothing but returns the module
+    if the module is already loaded, do nothing but returns the module.
+    if the module does not exists, then 
+      - create a new symbol table, i.e. a module
+      - insert it into ::voba_modules with hash key `module_id`
+      - create all symbols based on `symbol_names`
 
-    @module_name the name
-    @module_id  the id
-    @symbols  an array of symbols
+    @param module_name the name
+    @param module_id  the id
+    @param symbol_names  a tuple of symbols
     
     @return the module object, a hash table.
+
+    @note `symbol_names` could be arbitrary strings, now it is a tuple, could be an array?
+
  */
-extern voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[]);
+extern voba_value_t voba_import_module(const char * module_name, const char * module_id, voba_value_t symbols);
 /** find the module and load it.
     this function should not be used by others, why it is here?
  */    
@@ -64,7 +71,20 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
             SYMBOL_TABLE(VOBA_DECLARE_SYMBOL_TABLE_SYM_NAME)            \
             NULL                                                        \
         };                                                              \
-        voba_import_module(VOBA_MODULE_NAME,VOBA_MODULE_ID,symbols);    \
+        static voba_value_t                                             \
+            symbols2[sizeof(symbols)/sizeof(const char*)] = {           \
+            sizeof(symbols)/sizeof(const char*) - 1, VOBA_NIL,          \
+        };                                                              \
+        for(size_t i = 0 ; symbols[i]!=NULL; ++i){                      \
+            symbols2[i+1] =                                             \
+                voba_make_string(                                       \
+                    voba_c_id_decode(                                   \
+                        voba_str_from_cstr(symbols[i])));               \
+        }                                                               \
+        voba_import_module(VOBA_MODULE_NAME,                            \
+                           VOBA_MODULE_ID,                              \
+                           /* tuple or array?*/                         \
+                           voba_make_tuple(symbols2));                  \
     }                                                                   \
     SYMBOL_TABLE(VOBA__DECLARE_SYMBOL_TABLE_2)                          
 
@@ -74,26 +94,31 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
 #define VOBA__DECLARE_SYMBOL_TABLE_2(sym)                               \
 static voba_value_t VOBA__SYM_VAR(sym) = VOBA_NIL;                      \
 EXEC_ONCE_PROGN{                                                        \
-    VOBA__SYM_VAR(sym) = voba_module_var(VOBA_MODULE_NAME, VOBA_MODULE_ID, #sym); \
+    VOBA__SYM_VAR(sym) = voba_module_var(VOBA_MODULE_NAME, VOBA_MODULE_ID, voba_make_string(voba_str_from_cstr(#sym))); \
 }
-
-static inline voba_value_t voba_module_var(const char * name, const char * module_id, const char * symbol_name)
+/** return a symbol of in a module
+    
+    @param module_name
+    @param module_id
+    @param symbol_name an arbitrary string for a symbol name, this
+           symbol must be exists in the module.
+    @return a symbol
+ */
+static inline voba_value_t voba_module_var(const char * module_name, const char * module_id, voba_value_t symbol_name)
 {
     voba_value_t id = voba_make_string(voba_str_from_cstr(module_id));
     voba_value_t m = voba_hash_find(voba_modules,id);
+    // assert(voba_is_a(symbol_name,voba_cls_str); // I don't want to include <assert.h> yet.
     if(voba_is_nil(m)){
         fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' should already be there.", __LINE__, __FUNCTION__
-                ,name,module_id);
+                ,module_name,module_id);
         fprintf(stderr,__FILE__ );
         // abort(0);
     }
-    voba_str_t * symbol_name0 = voba_str_from_cstr(symbol_name);
-    voba_str_t * symbol_name1 = voba_c_id_decode(symbol_name0);
-    voba_value_t symbol_name2 = voba_make_string(symbol_name1);
-    voba_value_t s = voba_lookup_symbol(symbol_name2,voba_tail(m));
+    voba_value_t s = voba_lookup_symbol(symbol_name,voba_tail(m));
     if(voba_is_nil(s)){
         fprintf(stderr,__FILE__ ":%d:[%s] module `%s(%s)' module should contain symbol `%s'\n", __LINE__, __FUNCTION__,
-                name,module_id,symbol_name);
+                module_name, module_id, voba_str_to_cstr(voba_value_to_str(symbol_name)));
         //abort(0);
     }
     return s;
