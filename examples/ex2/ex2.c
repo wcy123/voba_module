@@ -1,5 +1,5 @@
 #define EXEC_ONCE_TU_NAME "main"
-#define EXEC_ONCE_DEPENDS {"voba.module", NULL}
+#define EXEC_ONCE_DEPENDS {"voba.module"}
 #include <voba/value.h>
 #include "m1/main.h" // import m1/main
 #include "m2/main.h" // import m2/main

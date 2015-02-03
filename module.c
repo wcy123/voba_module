@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #define EXEC_ONCE_TU_NAME "voba.module"
-#define EXEC_ONCE_DEPENDS {"voba.value",NULL}
+#define EXEC_ONCE_DEPENDS {"voba.value"}
 #include <exec_once.h>
 #include <voba/value.h>
 #include "module.h"
