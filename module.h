@@ -3,15 +3,35 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/** should these 3 macros be moved to another file? */
 static const char VOBA_MODULE_LANG_ID[]="__lang__";
 static const char VOBA_MODULE_LANG_MATCH[]="__match__";
 static const char VOBA_MODULE_LANG_ITER[]="__iter__";
+/** a pair of functions for simple decode/encode of c identifier */    
 extern voba_str_t * voba_c_id_encode(voba_str_t * str);
 extern voba_str_t * voba_c_id_decode(voba_str_t * str);
+/** the all modules, a hash table */    
 extern voba_value_t voba_modules;
+/** import a module 
+    
+    if the module is already loaded, do nothing but returns the module
+
+    @module_name the name
+    @module_id  the id
+    @symbols  an array of symbols
+    
+    @return the module object, a hash table.
+ */
 extern voba_value_t voba_import_module(const char * module_name, const char * module_id, const char * symbols[]);
+/** find the module and load it.
+    this function should not be used by others, why it is here?
+ */    
 extern voba_value_t voba_load_module(const char * filename,voba_value_t module);
+/** the search path for modules.
+ * an array of string
+ */    
 extern voba_value_t voba_module_path();
+/** util function to find a file in a search path of */    
 extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
                                   voba_str_t * module_name, // name
                                   voba_str_t * cwd,// current working directory
@@ -20,7 +40,17 @@ extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search p
                                   int resolv_realpath,
                                   voba_value_t attempts
     );
-extern voba_value_t voba_init_path_from_env(const char*);
+
+/** simple wrapper macros to attach __FILE__ and __LINE__ to a symbol
+    definition.
+    
+    `VOBA_DEFINE_MODULE_SYMBOL(s,v)` is almost identical to 
+<code>
+    voba_set_symbol_value(s,v)
+</code>
+    where `s` is a symbol by looking up a hash table, i.e. a module object.
+    
+ */    
 #define VOBA_DEFINE_MODULE_SYMBOL(s,v) voba_define_module_symbol(s,v,__FILE__,__LINE__)
 extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, const char * file , int line);
 #ifdef __cplusplus
