@@ -38,6 +38,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -62,7 +64,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-</div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><p>The module system for voba language.</p>
 <p>see the doxygen version at <a href="https://wcy123.github.io/voba_module">https://wcy123.github.io/voba_module</a></p>
 <h2>The first module</h2>
-<h3>create a module header file</h3>
+<h3>declare a module</h3>
 <p>see <code>examples/ex1/hello.h</code></p>
 <div class="fragment"><div class="line"><span class="preprocessor">#pragma once</span></div>
 <div class="line"><span class="preprocessor">#define VOBA_MODULE_ID &quot;eaebdb3c-a436-11e4-bf65-0800272ae0cc&quot;</span></div>
@@ -91,30 +93,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --><p>It is a simple C header file and it defines 3 macros.</p><ol type="1">
 <li><code>VOBA_MODULE_ID</code>: it is a unique id. It is generated, e.g. by <code>uuidgen -t</code></li>
 <li><code>VOBA_SYMBOL_TABLE(XX)</code>: A macro to define a set of symbols.</li>
-<li><code>VOBA_MODULE_NAME</code>: name of a module.</li>
+<li><code>VOBA_MODULE_NAME</code>: The name of the module.</li>
 <li>we must have <code>voba/module_end.h</code> in the end.</li>
 </ol>
 <h3>define the module</h3>
-<p>see <code>examples\ex1\hello.c</code> </p><div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
+<p>see <code>examples\ex1\hello.c</code></p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;hello&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;hello.h&quot;</span></div>
 <div class="line"></div>
-<div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t hello_world(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#a87beae3391f3bf28034f8507dceaa5c7">VOBA_FUNC</a> <span class="keyword">static</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> hello_world(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> <span class="keyword">self</span>, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args)</div>
 <div class="line">{</div>
 <div class="line">    printf(<span class="stringliteral">&quot;Hello Module\n&quot;</span>);</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 <div class="line"></div>
 <div class="line">EXEC_ONCE_PROGN{</div>
-<div class="line">    VOBA_DEFINE_MODULE_SYMBOL(s_hello_world, voba_make_func(hello_world));</div>
+<div class="line">    <a class="code" href="module_8h.html#a75f506da31f089d7a219f73a91a754d3">VOBA_DEFINE_MODULE_SYMBOL</a>(s_hello_world, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#afe87a8eb49c61b53146652fa7e7ac8af">voba_make_func</a>(hello_world));</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// the main entry</span></div>
-<div class="line">voba_value_t voba_init(voba_value_t this_module)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> voba_init(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> this_module)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>For <code>EXEC_ONCE_PROGN</code> and <code>EXEC_ONCE_PROGN</code>, refer to <a href="https://github.com/wcy123/exec_once.git">https://github.com/wcy123/exec_once.git</a></p>
-<p>The module definition must import/include the module head file by itself.</p>
+<p>The module definition must import(include) the module head file by itself.</p>
 <p>The symbol <code>hello_world</code> is prefixed with <code>s_</code> for C identifier.</p>
 <p><code>VOBA_DEFINE_MODULE_SYMBOL</code> is used to define the value of a symbol.</p>
 <p><code>voba_init</code> is the entry function of the module when module is loaded, in this example, it does nothing.</p>
@@ -124,13 +127,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h3>how to use the module</h3>
 <p>see <code>examples\ex1\ex1.c</code></p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;main&quot;</span></div>
+<div class="line"><span class="preprocessor">#define EXEC_ONCE_DEPENDS {&quot;voba.module&quot;}</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;hello.h&quot;</span></div>
 <div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
 <div class="line">{</div>
 <div class="line">    exec_once_init();</div>
-<div class="line">    voba_value_t args[] = {0};</div>
-<div class="line">    voba_apply(voba_symbol_value(s_hello_world),voba_make_tuple(args));</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args[] = {0};</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/apply_8h.html#a16186dc39b10214b25592bec19c6b761">voba_apply</a>(voba_symbol_value(s_hello_world),<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/tuple_8h.html#a68e97a70e69fcea01dbcd7c3bbc7aa49">voba_make_tuple</a>(args));</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>For <code>EXEC_ONCE_TU_NAME</code>, refer to <a href="https://github.com/wcy123/exec_once.git">https://github.com/wcy123/exec_once.git</a>. We must define it before including <code>voba/value.h</code></p>
@@ -176,9 +180,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])</div>
 <div class="line">{</div>
 <div class="line">    exec_once_init();</div>
-<div class="line">    voba_value_t args[] = {0};</div>
-<div class="line">    voba_apply(voba_symbol_value(s_hello_m1),voba_make_tuple(args)); <span class="comment">// invoke s_hello_m1</span></div>
-<div class="line">    voba_apply(voba_symbol_value(s_hello_m2),voba_make_tuple(args)); <span class="comment">// invoke s_hello_m2</span></div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args[] = {0};</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/apply_8h.html#a16186dc39b10214b25592bec19c6b761">voba_apply</a>(voba_symbol_value(s_hello_m1),<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/tuple_8h.html#a68e97a70e69fcea01dbcd7c3bbc7aa49">voba_make_tuple</a>(args)); <span class="comment">// invoke s_hello_m1</span></div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/apply_8h.html#a16186dc39b10214b25592bec19c6b761">voba_apply</a>(voba_symbol_value(s_hello_m2),<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/tuple_8h.html#a68e97a70e69fcea01dbcd7c3bbc7aa49">voba_make_tuple</a>(args)); <span class="comment">// invoke s_hello_m2</span></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 </div><!-- fragment --><p> </code></p>
@@ -216,20 +220,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m1/main.h&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;_private/foo.h&quot;</span></div>
-<div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t hello_m1(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#a87beae3391f3bf28034f8507dceaa5c7">VOBA_FUNC</a> <span class="keyword">static</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> hello_m1(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> <span class="keyword">self</span>, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args)</div>
 <div class="line">{</div>
 <div class="line">    printf(<span class="stringliteral">&quot;Hello from module 1\n&quot;</span>);</div>
-<div class="line">    voba_value_t xargs[] = {0};</div>
-<div class="line">    voba_apply(voba_symbol_value(s_foo),voba_make_tuple(xargs));</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> xargs[] = {0};</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/apply_8h.html#a16186dc39b10214b25592bec19c6b761">voba_apply</a>(voba_symbol_value(s_foo),<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/tuple_8h.html#a68e97a70e69fcea01dbcd7c3bbc7aa49">voba_make_tuple</a>(xargs));</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 <div class="line">EXEC_ONCE_PROGN{</div>
-<div class="line">    VOBA_DEFINE_MODULE_SYMBOL(s_hello_m1, voba_make_func(hello_m1));</div>
+<div class="line">    <a class="code" href="module_8h.html#a75f506da31f089d7a219f73a91a754d3">VOBA_DEFINE_MODULE_SYMBOL</a>(s_hello_m1, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#afe87a8eb49c61b53146652fa7e7ac8af">voba_make_func</a>(hello_m1));</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// the main entry</span></div>
-<div class="line">voba_value_t voba_init(voba_value_t this_module)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> voba_init(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> this_module)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --> </code></li>
 </ol>
@@ -238,20 +242,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;m2/main.h&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;_private/foo.h&quot;</span></div>
-<div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t hello_m2(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#a87beae3391f3bf28034f8507dceaa5c7">VOBA_FUNC</a> <span class="keyword">static</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> hello_m2(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> <span class="keyword">self</span>, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args)</div>
 <div class="line">{</div>
 <div class="line">    printf(<span class="stringliteral">&quot;hello from module 2\n&quot;</span>);</div>
-<div class="line">    voba_value_t xargs[] = {0};</div>
-<div class="line">    voba_apply(voba_symbol_value(s_foo),voba_make_tuple(xargs));</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> xargs[] = {0};</div>
+<div class="line">    <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/apply_8h.html#a16186dc39b10214b25592bec19c6b761">voba_apply</a>(voba_symbol_value(s_foo),<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/tuple_8h.html#a68e97a70e69fcea01dbcd7c3bbc7aa49">voba_make_tuple</a>(xargs));</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 <div class="line">EXEC_ONCE_PROGN{</div>
-<div class="line">    VOBA_DEFINE_MODULE_SYMBOL(s_hello_m2, voba_make_func(hello_m2));</div>
+<div class="line">    <a class="code" href="module_8h.html#a75f506da31f089d7a219f73a91a754d3">VOBA_DEFINE_MODULE_SYMBOL</a>(s_hello_m2, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#afe87a8eb49c61b53146652fa7e7ac8af">voba_make_func</a>(hello_m2));</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// the main entry</span></div>
-<div class="line">voba_value_t voba_init(voba_value_t this_module)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> voba_init(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> this_module)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --> </code></li>
 </ol>
@@ -288,18 +292,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><code>m1/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m1/foo&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;foo.h&quot;</span></div>
-<div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t foo(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#a87beae3391f3bf28034f8507dceaa5c7">VOBA_FUNC</a> <span class="keyword">static</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> foo(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> <span class="keyword">self</span>, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args)</div>
 <div class="line">{</div>
 <div class="line">    printf(<span class="stringliteral">&quot;hello from m1/foo.\n&quot;</span>);</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 <div class="line">EXEC_ONCE_PROGN{</div>
-<div class="line">    VOBA_DEFINE_MODULE_SYMBOL(s_foo, voba_make_func(foo));</div>
+<div class="line">    <a class="code" href="module_8h.html#a75f506da31f089d7a219f73a91a754d3">VOBA_DEFINE_MODULE_SYMBOL</a>(s_foo, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#afe87a8eb49c61b53146652fa7e7ac8af">voba_make_func</a>(foo));</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// the main entry</span></div>
-<div class="line">voba_value_t voba_init(voba_value_t this_module)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> voba_init(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> this_module)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --> </code></li>
 </ol>
@@ -307,18 +311,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><code>m2/_private/foo.c</code> <code> <div class="fragment"><div class="line"><span class="preprocessor">#define EXEC_ONCE_TU_NAME &quot;m2/foo&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;voba/value.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;foo.h&quot;</span></div>
-<div class="line">VOBA_FUNC <span class="keyword">static</span> voba_value_t foo(voba_value_t <span class="keyword">self</span>, voba_value_t args)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#a87beae3391f3bf28034f8507dceaa5c7">VOBA_FUNC</a> <span class="keyword">static</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> foo(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> <span class="keyword">self</span>, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> args)</div>
 <div class="line">{</div>
 <div class="line">    printf(<span class="stringliteral">&quot;hello from m2/foo.\n&quot;</span>);</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 <div class="line">EXEC_ONCE_PROGN{</div>
-<div class="line">    VOBA_DEFINE_MODULE_SYMBOL(s_foo, voba_make_func(foo));</div>
+<div class="line">    <a class="code" href="module_8h.html#a75f506da31f089d7a219f73a91a754d3">VOBA_DEFINE_MODULE_SYMBOL</a>(s_foo, <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/fun_8h.html#afe87a8eb49c61b53146652fa7e7ac8af">voba_make_func</a>(foo));</div>
 <div class="line">}</div>
 <div class="line"><span class="comment">// the main entry</span></div>
-<div class="line">voba_value_t voba_init(voba_value_t this_module)</div>
+<div class="line"><a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> voba_init(<a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/overview_8h.html#a4b4beb86106b46a64b829791f267f60b">voba_value_t</a> this_module)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">return</span> VOBA_NIL;</div>
+<div class="line">    <span class="keywordflow">return</span> <a class="codeRef" doxygen="/home/chunywan/d/working/voba/voba_value/docs/voba_value.tag:https://wcy123.github.io/voba_value/" href="https://wcy123.github.io/voba_value/small_8h.html#a0cbe908387e7765090f0ee3f4de435b8">VOBA_NIL</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --> </code></li>
 </ol>
@@ -350,7 +354,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;hello from m1/foo.</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;hello from module 2</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;hello from m2/foo.</div>
-</div><!-- fragment --><h2>dependency</h2>
+</div><!-- fragment --><h2>C APIs</h2>
+<p>see <a class="el" href="module_8h.html">module.h</a></p>
+<h2>dependency</h2>
 <pre>
 <div align="center">
 <img src="dot_inline_dotgraph_1.png" alt="dot_inline_dotgraph_1.png" border="0" usemap="#dot_inline_dotgraph_1.map"/>
@@ -369,7 +375,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- fragment --> </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Feb 3 2015 22:49:08 for the module system for language voba by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Feb 3 2015 22:51:08 for the module system for language voba by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
