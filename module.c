@@ -325,22 +325,9 @@ static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbol
 }
 
 voba_value_t voba_modules = VOBA_NIL;
-static inline void module__init_lang_module();
 EXEC_ONCE_PROGN{
     voba_modules = voba_make_hash();
-    module__init_lang_module();
 }
-static inline void module__init_lang_module()
-{
-    voba_value_t id = voba_make_string(voba_str_from_cstr(VOBA_MODULE_LANG_ID));
-    voba_value_t m = voba_make_symbol_table();
-    voba_hash_insert(voba_modules,id,m);
-    voba_make_symbol_cstr_with_value(
-        VOBA_MODULE_LANG_MATCH, m, voba_make_generic_function(VOBA_MODULE_LANG_MATCH,NULL));
-    voba_make_symbol_cstr_with_value(
-        VOBA_MODULE_LANG_ITER, m, voba_make_generic_function(VOBA_MODULE_LANG_ITER,NULL));
-}
-
 static voba_value_t all_symbols = VOBA_NIL;
 EXEC_ONCE_PROGN{
     all_symbols = voba_make_hash();

@@ -8,10 +8,6 @@ VOBA MODULE C APIS
 #ifdef __cplusplus
 extern "C" {
 #endif
-/** should these 3 macros be moved to another file? */
-static const char VOBA_MODULE_LANG_ID[]="__lang__";
-static const char VOBA_MODULE_LANG_MATCH[]="__match__";
-static const char VOBA_MODULE_LANG_ITER[]="__iter__";
 /** @brief encode to a C identifier 
 
     a valid C identifier character is not changed, e.g. `[0-9a-zA-Z_]`
