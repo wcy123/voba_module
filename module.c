@@ -238,10 +238,12 @@ static voba_value_t voba_load_module(const char * module_name,voba_value_t modul
     voba_symbol_set_value(VOBA_SYMBOL("__file__",module), basename);
     voba_array_push(module_cwd,dir_name);
     exec_once_init(); // initialize EXEC_ONCE_PROGN in the module
-    return voba_try_catch(
+    voba_value_t ret = voba_try_catch(
         voba_make_closure_2(voba_init_module,((voba_value_t)init),module),
         voba_make_closure_1(pop_cwd,module_cwd)
         );
+    voba_array_pop(module_cwd);
+    return ret;
 }
 static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbols);
 /**
