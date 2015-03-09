@@ -41,6 +41,11 @@ extern voba_value_t voba_modules;
       - insert it into ::voba_modules with hash key `module_id`
       - create all symbols based on `symbol_names`, symbol values are initially `undef`.
       - search module's shared library according to the name of the module.
+         - private module
+              - module name begins with "./"
+         - public module
+              - module name begins with something other than "./"
+         - @sa ::voba_find_file 
       - load the module
          - load the shared library with `dlopen`
          - execute EXEC_ONCE_PROGN blocks in the shared library.
@@ -56,6 +61,8 @@ extern voba_value_t voba_modules;
 
     @note 
 
+      - symbols in \a symbol_names must be defined, otherwise it is an error.
+      - \a `module_id` is the key
       - `symbol_names` could be arbitrary strings, now it is a tuple,
         could be an array?
       - all symbols must defined after loading the shared library.
@@ -72,9 +79,11 @@ extern voba_value_t voba_module_path();
 /** @brief find a file in a search path in a array of search path 
  * 
  * if `module_name` begin with a dot, e.g. `./a_relative_module`, only
- * the current working directory is searched, otherwise, `search_path`
- * is used for searching.
- * 
+ * the current directory is searched, otherwise, `search_path` is used
+ * for searching.
+ *
+ * The current directory is the directory of the loading module.
+ *
  * The actually file name is as `<path>/<prefix><module_name><suffix>`
  * 
  * realpath is used if `resolve_realpath` is not zero.
