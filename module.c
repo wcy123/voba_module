@@ -241,7 +241,7 @@ static voba_value_t voba_load_module(const char * module_name,voba_value_t modul
     voba_value_t ret = voba_try_catch(
         voba_make_closure_2(voba_init_module,((voba_value_t)init),module),
         voba_make_closure_1(pop_cwd,module_cwd)
-        );
+        ); /// @TODO: bug, add try.catch.final instead of try.catch?
     voba_array_pop(module_cwd);
     return ret;
 }
