@@ -157,14 +157,14 @@ voba_value_t dir_and_base_name(voba_str_t* filename)
 }
 static voba_value_t module_cwd = VOBA_NIL;
 EXEC_ONCE_PROGN{
-    /* const size_t sz  = 64*1024; */
-    /* char * p = (char*)malloc(sz); */
-    /* if(!p) abort(); */
-    /* char * cwd = getcwd(p,sz); */
-    /* if(!cwd) abort(); */
+    const size_t sz  = 64*1024;
+    char * p = (char*)malloc(sz);
+    if(!p) abort();
+    char * cwd = getcwd(p,sz);
+    if(!cwd) abort();
     module_cwd = voba_make_array_0();
-    //voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
-    //free(p);
+    voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
+    free(p);
 };
 static VOBA_FUNC voba_value_t voba_init_module(voba_value_t self, voba_value_t args)
 {
