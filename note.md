@@ -39,4 +39,10 @@ time to resolve real path.
 
 extra work is not preferred.
 
+### propose solution
+- module name, command line argument
+- module id `__main__`
+- module symbols, empty
+
+
 No good solution yet.

@@ -157,14 +157,14 @@ voba_value_t dir_and_base_name(voba_str_t* filename)
 }
 static voba_value_t module_cwd = VOBA_NIL;
 EXEC_ONCE_PROGN{
-    const size_t sz  = 64*1024;
-    char * p = (char*)malloc(sz);
-    if(!p) abort();
-    char * cwd = getcwd(p,sz);
-    if(!cwd) abort();
+    /* const size_t sz  = 64*1024; */
+    /* char * p = (char*)malloc(sz); */
+    /* if(!p) abort(); */
+    /* char * cwd = getcwd(p,sz); */
+    /* if(!cwd) abort(); */
     module_cwd = voba_make_array_0();
-    voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
-    free(p);
+    //voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
+    //free(p);
 };
 static VOBA_FUNC voba_value_t voba_init_module(voba_value_t self, voba_value_t args)
 {
@@ -241,7 +241,7 @@ static voba_value_t voba_load_module(const char * module_name,voba_value_t modul
     voba_value_t ret = voba_try_catch(
         voba_make_closure_2(voba_init_module,((voba_value_t)init),module),
         voba_make_closure_1(pop_cwd,module_cwd)
-        ); /// @TODO: bug, add try.catch.final instead of try.catch?
+        ); /// @bug, add try.catch.final instead of try.catch?
     voba_array_pop(module_cwd);
     return ret;
 }
@@ -250,7 +250,6 @@ static inline void voba_check_symbol_defined(voba_value_t m, voba_value_t symbol
  
  @bug there is a problem, one implementation could potentially be loaded
  twice with different ids. `dlopen` might still return the same instance
-
 
  */
 voba_value_t voba_import_module(const char * module_name, const char * module_id, voba_value_t symbol_names)

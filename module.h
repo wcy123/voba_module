@@ -90,7 +90,7 @@ extern voba_value_t voba_module_path();
  * 
  * @param search_path The array of a search path
  * @param module_name The basename of a file
- * @param cwd The current working directory.
+ * @param current_module_directory the directory name of the loading module
  * @param prefix The prefix
  * @param suffix The suffix
  * @param resolve_realpath see below
@@ -101,7 +101,7 @@ extern voba_value_t voba_module_path();
  */
 extern voba_str_t* voba_find_file(voba_value_t search_path, // array of search path
                                   voba_str_t * module_name, // name
-                                  voba_str_t * cwd,// current working directory
+                                  voba_str_t * current_module_directory,
                                   voba_str_t * prefix,
                                   voba_str_t * suffix,
                                   int resolve_realpath,
@@ -163,9 +163,9 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
 #define VOBA__SYM_VAR(sym) VOBA_MODULE_NAME_SPACE(VOBA_MODULE_SYMBOL_PREFIX(sym))
 
 #define VOBA__DECLARE_SYMBOL_TABLE_2(sym)                               \
-static voba_value_t VOBA__SYM_VAR(sym) = VOBA_NIL;                      \
+static voba_value_t VOBA__SYM_VAR(sym) = VOBA_UNDEF;                    \
 EXEC_ONCE_PROGN{                                                        \
-    VOBA__SYM_VAR(sym) = \
+    VOBA__SYM_VAR(sym) =                                                \
         voba_module_var(VOBA_MODULE_NAME,                               \
                         VOBA_MODULE_ID,                                 \
                         voba_make_string(                               \
