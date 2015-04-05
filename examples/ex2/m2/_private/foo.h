@@ -1,5 +1,5 @@
 #pragma once
-#define VOBA_MODULE_ID "9b0438aa-a484-11e4-bf65-0800272ae0cc"
+#define VOBA_MODULE_ID "m2/private/foo"
 #define VOBA_SYMBOL_TABLE(XX)                           \
     XX(foo)                                             \
 

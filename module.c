@@ -271,12 +271,9 @@ voba_value_t voba_import_module(const char * module_name, const char * module_id
         for(int64_t i = 0; i < len; ++i){
             // create an un-interned symbol
             voba_str_t * symbol_name = voba_value_to_str(voba_tuple_at(symbol_names,i));
-            voba_value_t s = voba_make_symbol(symbol_name,VOBA_NIL);
+            voba_value_t s = voba_make_symbol(symbol_name,m);
             // initialized it with undef
             voba_symbol_set_value(s,VOBA_UNDEF);
-            // intern the symbol into the module, it is a fatal error
-            // if the symbol is already interned.
-            voba_intern_symbol(s,m);
             if(voba_module_debug){
                 fprintf(stderr,__FILE__ ":%d:[%s] create symbol %s(0x%lx) for module %s(%s), symbol value is undef.\n" 
                         ,__LINE__, __FUNCTION__,
