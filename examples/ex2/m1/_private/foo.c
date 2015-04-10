@@ -1,7 +1,7 @@
 #define EXEC_ONCE_TU_NAME "m1/foo"
 #include <voba/value.h>
 #include "foo.h"
-VOBA_FUNC static voba_value_t foo(voba_value_t self, voba_value_t args)
+VOBA_FUNC static voba_value_t foo(voba_value_t fun, voba_value_t args, voba_value_t* next_fun, voba_value_t next_args[])
 {
     printf("hello from m1/foo.\n");
     return VOBA_NIL;

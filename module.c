@@ -166,16 +166,16 @@ EXEC_ONCE_PROGN{
     voba_array_push(module_cwd,voba_make_string(voba_strdup(voba_str_from_cstr(cwd))));
     free(p);
 };
-static VOBA_FUNC voba_value_t voba_init_module(voba_value_t self, voba_value_t args)
+static VOBA_FUNC voba_value_t voba_init_module(voba_value_t fun, voba_value_t args, voba_value_t* next_fun, voba_value_t next_args[])
 {
     voba_value_t (*init)(voba_value_t);
-    *(void **) (&init) = (void*)(voba_tuple_at(self,0));
-    voba_value_t module = voba_tuple_at(self,1);
+    *(void **) (&init) = (void*)(voba_tuple_at(fun,0));
+    voba_value_t module = voba_tuple_at(fun,1);
     return init(module);
 }
-static VOBA_FUNC voba_value_t pop_cwd(voba_value_t self, voba_value_t args)
+static VOBA_FUNC voba_value_t pop_cwd(voba_value_t fun, voba_value_t args, voba_value_t* next_fun, voba_value_t next_args[])
 {
-    voba_value_t cwd = voba_array_at(self,0);
+    voba_value_t cwd = voba_array_at(fun,0);
     voba_array_pop(cwd);
     return VOBA_NIL;
 }
