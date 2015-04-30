@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     exec_once_init();
-    voba_value_t args[] = {0};
+    voba_value_t args[] = {0, VOBA_BOX_END};
     voba_apply(voba_symbol_value(s_hello_world),voba_make_tuple(args));
     return 0;
 }

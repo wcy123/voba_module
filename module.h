@@ -140,18 +140,20 @@ extern void voba_define_module_symbol(voba_value_t symbol, voba_value_t value, c
     EXEC_ONCE_PROGN {                                                   \
         static const char * symbols[] = {                               \
             SYMBOL_TABLE(VOBA_DECLARE_SYMBOL_TABLE_SYM_NAME)            \
-            NULL                                                        \
+            NULL							\
         };                                                              \
         static voba_value_t                                             \
-            symbols2[sizeof(symbols)/sizeof(const char*)] = {           \
+            symbols2[sizeof(symbols)/sizeof(const char*) + 1] = {	\
             sizeof(symbols)/sizeof(const char*) - 1, VOBA_NIL,          \
         };                                                              \
-        for(size_t i = 0 ; symbols[i]!=NULL; ++i){                      \
+        size_t i;							\
+	for( i = 0 ; symbols[i]!=NULL; ++i){				\
             symbols2[i+1] =                                             \
                 voba_make_string(                                       \
                     voba_c_id_decode(                                   \
                         voba_str_from_cstr(symbols[i])));               \
-        }                                                               \
+        }								\
+	symbols2[i+1] = VOBA_BOX_END;					\
         voba_import_module(VOBA_MODULE_NAME,                            \
                            VOBA_MODULE_ID,                              \
                            /* tuple or array?*/                         \
